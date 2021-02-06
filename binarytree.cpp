@@ -114,7 +114,7 @@ int deep_of_tree(TreeNode *root){
 string serialize(TreeNode* root) {
     if(!root)
         return "";
-    int count=1<<(deep_of_tree(root)-1)-1;
+    int count=(1<<deep_of_tree(root))-1;
     string s;queue<TreeNode*> node;node.push(root);
     while(count!=0){
         if(node.front()){
@@ -133,12 +133,18 @@ string serialize(TreeNode* root) {
     return s;
 }
 int read_from_string(string::iterator &str,const string::iterator &end){
-    int res=0;
+    int res=0;bool is_negative=false;
     for(;*str!=','&&str!=end;++str){
+        if(*str=='-'){
+            is_negative=true;
+            continue;
+        }
         res=res*10+(*str-'0');
     }
     if(str!=end)
         ++str;
+    if(is_negative)
+        res*=(-1);
     return res;
 }
 void build_tree(TreeNode *root,int val,int pos){
@@ -149,8 +155,8 @@ void build_tree(TreeNode *root,int val,int pos){
     while(x){
         x>>=1;++len;
     }
-    x=(1<<(len-1));
-    while(pos){
+    x=(1<<(len-2));
+    while(x){
         if(pos&x){
             if(!root->right)
                 root->right=new TreeNode;
@@ -169,11 +175,12 @@ TreeNode* deserialize(string data) {//1,2,3,#,#,4,5
     if(data.empty())
         return NULL;
     string::iterator str=data.begin(),end=data.end();
-    TreeNode *root=new TreeNode;int i=1;
+    TreeNode *root=new TreeNode(data[0]-'0');int i=1;
     while(str!=end){
-        if(*str!='#')
+        if(*str!='#'){
             build_tree(root,read_from_string(str,end),i++);
-        else{gf
+        }
+        else{
             ++str;
             if(str==end)
                 return root;
