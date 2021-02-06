@@ -320,3 +320,43 @@ int findMinArrowShots(vector<vector<int>>& points) {
     }
     return num;
 }
+bool isMatch(string s, string p) {
+    int size1=s.size(),size2=p.size();
+    bool dp[size1+1][size2+1];
+    dp[0][0]=1;
+    for(int i=0;i<=size1;++i)
+        dp[i][0]=0;
+    for(int i=0;i<size2;++i){
+
+    }
+    for(int i=0;i<=size2;++i){
+        for(int j=0;j<=size2;++j){
+
+        }
+    }
+}
+//股票问题，你只能选择某一天买入这只股票，并选择在未来的某一个不同的日子卖出该股票。
+int maxProfit(vector<int>& prices) {
+    int minprice=INT_MAX,n=prices.size(),maxprofit=0;
+    for(int i=0;i<n;++i){
+        if(prices[i]<minprice)
+            minprice=prices[i];
+        else if((prices[i]-minprice)>maxprofit)
+            maxprofit=prices[i]-minprice;
+    }
+    return maxprofit;
+}
+//股票问题，可以多次买卖,你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+int maxProfit(vector<int>& prices) {
+    int n=prices.size();
+    int dp[n][2];dp[0][0]=0;dp[0][1]=-prices[0];
+    for(int i=1;i<n;++i){
+        dp[i][0]=max(dp[i-1][0],dp[i-1][1]+prices[i]);
+        dp[i][1]=max(dp[i-1][0]-prices[i],dp[i-1][1]);
+    }
+    return dp[n-1][0];
+}
+//你最多可以完成两笔交易。你不能同时参与多笔交易(你必须在再次购买前出售掉之前的股票)
+int maxProfit(vector<int>& prices) {
+
+}
