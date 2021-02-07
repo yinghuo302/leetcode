@@ -347,6 +347,23 @@ int maxProfit(vector<int>& prices) {
     return maxprofit;
 }
 //股票问题，可以多次买卖,你不能同时参与多笔交易（你必须在再次购买前出售掉之前的股票）。
+int max(int a,int b){
+    return (a>b)? a: b;
+}
+int max(int a,int b,int c){
+    if(a>b){
+        if(a>c)
+            return a;
+        else
+            return c;
+    }
+    else{
+        if(c>b)
+            return c;
+        else
+            return b;
+    }
+}
 int maxProfit(vector<int>& prices) {
     int n=prices.size();
     int dp[n][2];dp[0][0]=0;dp[0][1]=-prices[0];
@@ -355,8 +372,42 @@ int maxProfit(vector<int>& prices) {
         dp[i][1]=max(dp[i-1][0]-prices[i],dp[i-1][1]);
     }
     return dp[n-1][0];
+/*  int b=-prices[0],s=0;
+    for(int i=1;i<n;++i){
+        b=max(b,-prices[i],s-prices[i]);
+        s=max(b+prices[i],s);
+    }
+    return s;*/
 }
 //你最多可以完成两笔交易。你不能同时参与多笔交易(你必须在再次购买前出售掉之前的股票)
 int maxProfit(vector<int>& prices) {
-
+    int n=prices.size();
+    int b1=-prices[0],s1=0,b2=-prices[0],s2=0;
+    for(int i=1;i<n;i++){
+        b1=max(b1,-prices[i]);
+        s1=max(s1,b1+prices[i]);//拓展条件可以当天买当天卖
+        b2=max(b2,s1-prices[i]);
+        s2=max(s2,b2+prices[i]);
+    }
+    return s2;
+}
+int maxProfit(int k, vector<int>& prices) {
+    int size=prices.size(),n=k*2;
+    int dp[n];
+    for(int i=0;i<n;++i){//dp[i]i为偶数表示买，i为奇数表示卖
+        if(i%2)//奇数
+            dp[i]=0;
+        else
+            dp[i]=-prices[0];
+    }
+    for(int i=1;i<size;++i){
+        dp[0]=max(dp[0],-prices[i]);
+        for(int j=0;i<n;++j){
+            if(i%2)//奇数卖
+                dp[j]=max(dp[j],dp[j-1]+prices[i]);
+            else//偶数买
+                dp[j]=max(dp[j],dp[j-1]-prices[i],-prices[i]);
+        }
+    }
+    return dp[n-1];
 }
