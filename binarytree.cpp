@@ -76,6 +76,7 @@ TreeNode* constructMaximumBinaryTree(vector<int>& nums) {
     int size=nums.size();
     return constructMaximumBinaryTree(nums.begin(),size);
 }
+//连接节点，将同深度的节点与右边节点相连
 class Node {
 public:
     int val;
@@ -105,6 +106,7 @@ Node* connect(Node* root) {
     connect(root->left);connect(root->right);
     return root;
 }
+//二叉树的序列化和反序列化
 int deep_of_tree(TreeNode *root){
     if(!root)
         return 0;
