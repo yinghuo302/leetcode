@@ -144,7 +144,7 @@ vector<int> nextGreaterElement(vector<int>& nums1, vector<int>& nums2) {
         res[j]=a[nums1[j]];
     return res;
 }
-//下一个更大的元素，
+//下一个更大的元素，数组可以循环，且有重复元素
 vector<int> nextGreaterElements(vector<int>& nums) {
     short int size=nums.size();vector<int> res(size);
     stack<pair<short int,int>> s;
