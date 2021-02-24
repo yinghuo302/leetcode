@@ -258,6 +258,7 @@ int longestSubarray(vector<int>& nums, int limit) {
     }
     return res;
 }
+//爱生气的书店老板
 int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int X) {
     int size=customers.size(),no_use=0,use=0;
     for(int i=0;i<size;++i)
@@ -274,4 +275,210 @@ int maxSatisfied(vector<int>& customers, vector<int>& grumpy, int X) {
         ++right;++right;
     }
     return no_use+use;
+}
+/*给定一个非空且只包含非负数的整数数组 nums，数组的度的定义是指数组里任一元素出现频数的最大值。
+你的任务是在nums中找到与nums拥有相同大小的度的最短连续子数组，返回其长度。*/
+int findShortestSubArray(vector<int>& nums) {
+    unordered_map<int,vector<int>> m;
+    int size=nums.size();
+    for(int i=0;i<size;++i){
+        unordered_map<int,vector<int>>::iterator a=m.find(nums[i]);
+        if(a!=m.end()){
+            ++(a->second[0]);
+            a->second[2]=i;
+        }
+        else
+            m[nums[i]]={1,i,i};
+    }
+    unordered_map<int,vector<int>>::iterator i1=m.begin(),i2=m.end();
+    int max_d=0,min_l=size;
+    while(i1!=i2){
+        if(i1->second[0]>max_d){
+            max_d=i1->second[0];
+            min_l=i1->second[2]-i1->second[1]+1;
+        }
+        if(i1->second[0]==max_d)
+            if(i1->second[2]-i1->second[1]+1<min_l)
+                min_l=i1->second[2]-i1->second[1]+1;
+        ++i1;
+    }
+    return min_l;
+}
+//给定一个由若干0和1组成的数组A，我们最多可以将K个值从0变成1。
+int longestOnes(vector<int>& A, int K) {
+    int size=A.size(),left=0,right=1,num_of_zero=1,res=0;
+    if(A[0])
+        num_of_zero=0;
+    while(right<size){
+        if(!A[right])
+            ++num_of_zero;
+        while(num_of_zero>K){
+            if(!A[left])
+                --num_of_zero;
+            --left;
+        }
+        if(right-left+1>res)
+            res=right-left+1;
+    }
+    return res;
+}
+/*给你一个字符串s，一个字符串t。返回s中涵盖t所有字符的最小子串，时间超限解法：
+bool has_letter(const string &s,const string &t,int begin,int end){
+    int size=t.size();
+    if(end-begin+1<size)
+        return false;
+    string s1=s.substr(begin,end-begin+1);
+    for(int i=0;i<size;++i){
+        string::size_type pos=s1.find(t[i]);
+        if(pos==s1.npos)
+            return false;
+        else
+            s1.erase(pos,1);
+    }
+    return true;
+}
+string minWindow(string s, string t) {
+    int size=s.size(),n=t.size(),left=0,right=n-1,min_l=INT_MAX,r_left=0;
+    while(right<size){
+        left=right-n+1;
+        while(left>=0&&!has_letter(s,t,left,right))
+            --left;
+        if(left>=0&&right-left+1<min_l){
+            min_l=right-left+1;
+            r_left=left;
+        }
+        ++right;
+    }
+    return (min_l==INT_MAX)? string() : s.substr(r_left,min_l);
+}
+*/
+bool has_letter(const string &s,const string &t,int begin,int end){
+    int size=t.size();
+    if(begin-end+1<size)
+        return false;
+    for(int i=0;i<size;++i){
+        if(s.find(t[i])==s.npos)
+            return false;
+    }
+    return true;
+}
+/*
+string minWindow(string s, string t) {
+    int size=s.size(),n=t.size(),left=0,right=n-1,min_l=INT_MAX,r_left=0;
+    if(n>size)
+        return string();
+    unordered_map<char,int> m;
+    for(int i=0;i<n;++i)
+        m.emplace(t[i],0);
+    for(int i=0;i<right;++i){
+        unordered_map<char,int>::iterator m_i=m.find(s[i]);
+        if(m_i!=m.end())
+            ++m_i->second;
+    }
+    while(right<size){
+        left=right-n+1;
+        unordered_map<char,int>::iterator m_i=m.find(s[left]);
+        if(m_i!=m.end())
+            ++m_i->second;
+        while(!has_letter(m)&&left>=0)
+            --left;
+        if(right-left+1<min_l&&left>=0){
+            min_l=right-left+1;
+            r_left=left;
+        }
+        ++right;
+    }
+    return (min_l==INT_MAX)? string() : s.substr(r_left,min_l);
+}
+*/
+//有序数组中找两个数和为target
+vector<int> twoSum(vector<int>& numbers, int target) {
+    int size=numbers.size(),left=0,right=size-1;
+    while(left<right){
+        if(numbers[left]+numbers[right]==target)
+            return vector<int>{left+1,right+1};
+        else if(numbers[left]+numbers[right]>target)
+            --right;
+        else
+            ++left;
+    }
+    return vector<int>{-1,-1};
+}
+//水平翻转图像，并反转图像,水平翻转图片是将图片的每一行进行翻转，即逆序,反转图片的意思是图片中的0全部被1替换，1全部被0替换
+vector<vector<int>> flipAndInvertImage(vector<vector<int>>& A) {
+    int size=A.size();
+    for(int i=0;i<size;++i){
+        int left=0,right=size-1;
+        while (left<right){
+            if(A[i][left]==A[i][right]){
+                A[i][left]=!A[i][left];
+                A[i][right]=!A[i][right];
+            }
+            ++left;--right;
+        }
+        if(right==left)
+            A[i][left]=!A[i][right];
+    }
+    return A;
+}
+//反转字符串
+void reverseString(vector<char>& s) {
+    if(!s.empty()){
+        vector<char>::iterator left=s.begin(),right=s.end()-1;
+        while(left<right){
+            char tem=*right;*right=*left;*left=tem;
+            --right;++left;
+        }
+    }
+}
+//常数时间插入，删除，获取随机元素
+class RandomizedSet {
+private:
+    unordered_map<int,int> m;
+    vector<int> v;
+public:
+    RandomizedSet() {
+    }
+    bool insert(int val) {
+        if(m.find(val)==m.end())
+            return false;
+        v.push_back(val);
+        m.emplace(val,v.size());
+        return true;
+    }
+    bool remove(int val) {
+        unordered_map<int,int>::iterator i=m.find(val);
+        if(i==m.end())
+            return false;
+        v[i->second]=*v.rbegin();m[*v.rbegin()]=i->second;
+        v.pop_back();m.erase(i);
+        return true;
+    }
+    int getRandom() {
+        return v[rand()%v.size()];
+    }
+};
+bool check(const int* inWindow,const int* target){
+    for(int i=0;i<26;++i)
+        if(inWindow[i]!=target[i])
+            return false;
+    return true;
+}
+vector<int> findAnagrams(string s, string p) {
+    int size=s.size(),n=p.size(),left=0,right=n;
+    int inWindow[26]={0},target[26]={0};vector<int> res;
+    for(int i=0;i<n;++i)
+        ++target[p[i]-'a'];
+    for(int i=0;i<right;++i)
+        ++inWindow[s[i]-'a'];
+    if(check(inWindow,target))
+        res.push_back(0);
+    while (right<size){
+        ++inWindow[s[right]-'a'];
+        --inWindow[s[left]-'a'];++left;
+        if(check(inWindow,target))
+            res.push_back(left);
+        ++right;
+    }
+    return res;
 }
