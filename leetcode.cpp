@@ -482,3 +482,50 @@ vector<int> findAnagrams(string s, string p) {
     }
     return res;
 }
+//转置矩阵
+vector<vector<int>> transpose(vector<vector<int>>& matrix) {
+    int m=matrix.size(),n=matrix[0].size();
+    vector<vector<int>> res(n,vector<int>(m));
+    for(int i=0;i<m;++i)
+        for(int j=0;j<n;++j)
+            res[j][i]=matrix[i][j];
+    return res;
+}
+//最长回文子串
+pair<int,int> expand(const string &s,int centor){//assert s.size()>=2
+    pair<int,int> res;
+    int left=centor,right=centor,size=s.size();
+    if(!centor){
+        if(s[0]==s[1])
+            return {0,2};
+        else
+            return {0,1};
+    }
+    while (left>=0&&right<size&&s[left]==s[right]){
+        ++right;--left;
+    }
+    res={left+1,right-left-1};
+    if(s[centor]!=s[centor-1])
+        return res;
+    left=centor-1,right=centor;
+    while (left>=0&&right<size&&s[left]==s[right]){
+        ++right;--left;
+    }
+    if(right-left-1>res.second-res.first)
+        res={left+1,right-left-1};
+    return res;
+}
+string longestPalindrome(string s) {
+    int size=s.size();
+    if(size==1)
+        return s;
+    int len=1,left=0;
+    for(int i=0;i<size;++i){
+        pair<int,int> tem=expand(s,i);
+        cout << tem.second <<" ";
+        if(tem.second>len){
+            len=tem.second;left=tem.first;
+        }
+    }
+    return s.substr(left,len);
+}
