@@ -679,3 +679,40 @@ bool isDecreasing(const vector<int>& A){
 bool isMonotonic(vector<int>& A) {
     return isIncreasing(A)||isDecreasing(A);
 }
+//字符串转换为整数
+int myAtoi(string s) {
+    int size=s.size(),i=0,res=0;
+    for(;i<size&&s[i]==' ';++i);
+    bool is_negative=false;
+    if(s[i]=='-'){
+        is_negative=true;++i;
+    }
+    else if(s[i]=='+')
+        ++i;
+    for(;i<size;++i){
+        int tem=s[i]-'0';
+        if(tem>=0&&tem<=9){
+            if(res>INT_MAX/10||(res==INT_MAX/10&&tem>7))
+                return INT_MAX;
+            if(res<INT_MIN/10||(res==INT_MIN/10&&tem>8))
+                return INT_MIN;
+            if(is_negative)
+                res=res*10-tem;
+            else
+                res=res*10+tem;
+        }
+        else
+            break;
+    }
+    return res;
+}
+bool isPalindrome(int x) {
+    if(x<0||(!x&&x%10==0))
+        return false;
+    int reversed=0;
+    while(x>reversed){
+        reversed=reversed*10+x%10;
+        x/=10;
+    }
+    return x==reversed||x==(reversed%10);
+}
