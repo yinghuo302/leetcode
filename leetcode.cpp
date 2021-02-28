@@ -529,3 +529,153 @@ string longestPalindrome(string s) {
     }
     return s.substr(left,len);
 }
+//给你一个字符串s和一个整数k，请你找出s中的最长子串，要求该子串中的每一字符出现次数都不少于k
+int dfs(const string s,int left,int right,int k){//辅助函数
+    int c[26]={0};
+    for(int i=left;i<=right;++i)
+        ++c[s[i]-'a'];
+    char split=0;
+    for(int i=0;i<26;++i)
+        if(c[i]&&c[i]<k){
+            split=i+'a';break;
+        }
+    if(!split)
+        return right-left+1;
+    int res=0;
+    for(int i=left;i<right;++i){
+        if(s[i]==split){
+            if(i!=left)
+                res=max(res,dfs(s,left,i-1,k));
+            left=i+1;
+        }
+    }
+    if(s[right]==split)
+        res=max(res,dfs(s,left,right-1,k));
+    else
+        res=max(res,dfs(s,left,right,k));
+    return res;
+}
+int longestSubstring(string s, int k) {
+    return dfs(s,0,s.size()-1,k);
+}
+//十进制反转数位,若溢出，则返回0
+int reverse(int x) {
+    int res=0;
+    while(!x){
+        int tem=x%10;
+        x/=10;
+        if(res>INT_MAX/10||(res==INT_MAX/10&&tem>7))
+            return 0;
+        if(res<INT_MIN/10||(res==INT_MIN/10&&tem<-8))
+            return 0;
+        res=res*10+tem;
+    }
+    return res;
+}
+//LRU(最近最少使用)缓存机制,目前存在错误address sanitizer: heap-use-after-free on address
+struct LinkList{
+    int key;
+    int val;
+    LinkList* next;
+    LinkList* prev;
+    LinkList():key(-1),val(-1),next(NULL),prev(NULL){}
+    LinkList(int key,int value):key(key),val(value),next(NULL),prev(NULL){}
+    LinkList(int key,int value,LinkList* next):key(key),val(value),next(next){}
+};
+class LRUCache {
+private:
+    unordered_map<int,LinkList*> data;
+    LinkList* head;
+    LinkList* tail;
+    int size;
+    int capacity;
+    void move_to_head(LinkList* node){
+        if(node!=head){
+            if(node==tail){
+                tail=tail->prev;
+                tail->next=NULL;
+                node->prev=NULL;
+            }
+        }
+        else{
+            node->prev->next=node->next;
+            node->next->prev=node->prev;
+        }
+        node->next=head;
+        head=node;
+        head->next->prev=head;
+    }
+    void add_to_head(LinkList* node){
+        node->next=head;
+        head=node;
+        if(size<capacity){
+            if(!size)
+                tail=node;
+            else
+                head->next->prev=head;
+            ++size;
+        }
+        else{
+            head->next->prev=head;
+            data.erase(tail->key);
+            LinkList* tem=tail;
+            tail=tail->prev;
+            delete(tem);
+        }
+    }
+public:
+    LRUCache(int capacity):capacity(capacity),head(NULL),tail(NULL),size(0) {
+    }
+    int get(int key) {
+        unordered_map<int,LinkList*>::iterator i1=data.find(key);
+        if(i1!=data.end()){
+            move_to_head(i1->second);
+            return i1->second->val;
+        }
+        return -1;
+    }
+    void put(int key, int value){
+        unordered_map<int,LinkList*>::iterator i1=data.find(key);
+        if(i1!=data.end()){
+            i1->second->val=value;
+            move_to_head(i1->second);
+        }
+        else{
+            data.emplace(key,new LinkList(key,value));
+            add_to_head(data[key]);
+        }
+    }
+};
+//LFU(最不经常使用)缓存机制
+class LFUCache {
+public:
+    LFUCache(int capacity) {
+
+    }
+    
+    int get(int key) {
+
+    }
+    
+    void put(int key, int value) {
+
+    }
+};
+//判断是否为单调数组
+bool isIncreasing(const vector<int>& A){
+    int size=A.size();
+    for(int i=0;i<size-1;++i)
+        if(A[i]<A[i+1])
+            return false;
+    return true;
+}
+bool isDecreasing(const vector<int>& A){
+    int size=A.size();
+    for(int i=0;i<size-1;++i)
+        if(A[i]>A[i+1])
+            return false;
+    return true;
+}
+bool isMonotonic(vector<int>& A) {
+    return isIncreasing(A)||isDecreasing(A);
+}
