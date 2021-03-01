@@ -716,3 +716,49 @@ bool isPalindrome(int x) {
     }
     return x==reversed||x==(reversed%10);
 }
+//
+class NumArray {
+private:
+    vector<int> sums;
+public:
+    NumArray(vector<int>& nums) {
+        if(!nums.empty()){
+            int size=nums.size();
+            sums.resize(size+1);
+            sums[0]=0;
+            for(int i=0;i<size;++i)
+                sums[i+1]=nums[i]+sums[i];
+        }
+    }
+    int sumRange(int i, int j) {
+        if(!sums.empty())
+            return 0;
+        else
+            return sums[j+1]-sums[i];
+    }
+};
+//罗马数字转整数
+int romanToInt(string s) {
+    unordered_map<char,int> mp={{'I',1},{'V',5},{'X',10},{'L',50},{'C',100},{'D',500},{'M',1000}};
+    int size=s.size(),res=0;
+    for(int i=0;i<size-1;++i){
+        if(mp[s[i]]<mp[s[i+1]])
+            res-=mp[s[i]];
+        else
+            res+=mp[s[i]];
+    }
+    res+=mp[s[size-1]];
+    return res;
+}
+//整数转罗马数字
+string intToRoman(int num) {
+    vector<string> thousands = {"", "M", "MM", "MMM"};
+    vector<string> hundreds = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+    vector<string> tens = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+    vector<string> ones = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+    return thousands[num / 1000] + hundreds[num % 1000 / 100] + tens[num % 100 / 10] + ones[num % 10];
+}
+//除去排序数组中的重复元素
+int removeDuplicates(vector<int>& nums) {
+
+}
