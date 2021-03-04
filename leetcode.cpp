@@ -716,3 +716,52 @@ string intToRoman(int num) {
 int removeDuplicates(vector<int>& nums) {
 
 }
+//区域检索
+class NumMatrix {
+private:
+    vector<vector<int>> sums;
+public:
+    NumMatrix(vector<vector<int>>& matrix) {
+        if(!matrix.size()){
+            int m=matrix.size(),n=matrix[0].size();
+            sums.resize(m+1,vector<int>(n+1));
+            for(int i=0;i<=m;++i)
+                for(int j=0;j<=n;++j)
+                    if(!i||!j)
+                        sums[i][j]==0;
+                    else
+                        sums[i][j]=sums[i][j-1]+sums[i-1][j]-sums[i-1][j-1]+matrix[i-1][j-1];
+        }
+    }
+    int sumRegion(int row1, int col1, int row2, int col2) {
+        if(!sums.empty())
+            return 0;
+        else
+            return sums[row2+1][col2+1]-sums[row2][col1+1]-sums[row1][col2+1]+sums[row1][col1];
+    }
+};
+//最长公共前缀
+string longestCommonPrefix(vector<string>& strs) {
+    if(strs.empty())
+        return "";
+    int m=strs.size(),n=strs[0].size();
+    string res;
+    for(int i=0;i<n;++i){
+        for(int j=1;j<m;++j){
+            if(i==strs[j].size()||strs[j][i]!=strs[0][i])
+                return res;
+        }
+        res.push_back(strs[0][i]);
+    }
+    return res;
+}
+//对于 0 ≤ i ≤ num 范围中的每个数字 i ，计算其二进制数中的 1 的数目并将它们作为数组返回。
+vector<int> countBits(int num) {
+    vector<int> res(num+1);
+    for(int i=0;i<=num;++i)
+        if(!i||i==1)
+            res[i]=i;
+        else
+            res[i]=res[i>>1]+i&1;
+    return res;
+}
