@@ -15,18 +15,22 @@ TreeNode* invertTree(TreeNode* root) {
     root->right=invertTree(root->left);root->left=invertTree(t);
     return root;
 }
-TreeNode *find_right_end(TreeNode *root){//assert root!=NULL
-    while(root->right)
-        root=root->right;
-    return root;
-}
+// 给你二叉树的根结点 root ，请你将它展开为一个单链表：
+// 展开后的单链表应该同样使用 TreeNode ，其中 right 子指针指向链表中下一个结点，而左子指针始终为 null 。
+// 展开后的单链表应该与二叉树 先序遍历 顺序相同。
 void flatten(TreeNode* root) {
-    if(root&&root->left){
-        TreeNode *tem=root->right;root->right=root->left;
-        flatten(root->left);root->left=NULL;
-        find_right_end(root->left)->right=tem;
-    }
+    if(!root)
+        return ;
+    TreeNode* p = root->right;
+    root->right = root->left;
+    flatten(root->left);
+    flatten(p);
+    root->left = NULL;
+    while(root->right)
+        root = root->right;
+    root->right = p;
 }
+// 
 bool has_node(TreeNode *root,TreeNode *p){
     if(!root)
         return false;
