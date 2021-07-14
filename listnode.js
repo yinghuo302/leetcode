@@ -1,7 +1,7 @@
 /*
  * @Author: zanilia
  * @Date: 2021-06-27 21:38:56
- * @LastEditTime: 2021-06-28 23:44:01
+ * @LastEditTime: 2021-07-14 18:58:09
  * @Descripttion:
 */
 function ListNode(val) {
@@ -192,4 +192,911 @@ var flatten = function(root) {
     while(root.right)
         root = root.right;
     root.right = p;
+};
+/*
+ * @param {number} columnNumber
+ * @return {string}
+*/
+var convertToTitle = function(columnNumber) {
+    let ret = [];
+    while(columnNumber!=0){
+        let num1 = (columnNumber-1)%26+1;
+        columnNumber /= 26;
+        ret.push(String.fromCharCode(num1-1+'A'.charCodeAt()));
+        columnNumber = Math.floor((columnNumber-a0)/26);
+    }
+    ret.reverse();
+    return ret.join('');
+};
+// Remove duplicate elements
+/*
+ * @param {number[]} nums
+ * @param {number} val
+ * @return {number}
+*/
+var removeElement = function(nums, val) {
+    var left = 0,right = nums.length;
+    while(left<right){
+        if(nums[left]===val)
+            nums[left] = nums[--right];
+        else
+            ++left;
+    }
+    return left;
+};
+// 二叉树序列化和反序列化
+/*
+ * Encodes a tree to a single string.
+ * @param {TreeNode} root
+ * @return {string}
+*/
+var serialize = function(root) {
+    ret = new String();
+    serialize_assist(root,ret);
+    return ret;
+};
+var serialize_assist = function(root,res){
+    if(!root)
+        res += ",null";
+    else{
+        res += (root.val + '' + ",");
+        serialize_assist(root.left,res);
+        serialize_assist(root.right,res);
+    }
+};
+/*
+ * Decodes your encoded data to tree.
+ *
+ * @param {string} data
+ * @return {TreeNode}
+*/
+var deserialize = function(data) {
+    dataArray = data.split(',');
+    return deserialize_assist(dataArray,root);
+};
+
+var deserialize_assist = function(dataArray){
+    if(dataArray[0]=='null'){
+        dataArray.shift();
+        return null;
+    }
+    var root = new TreeNode(parseInt(dataArray[0]));
+    root.left = deserialize_assist(dataArray);
+    root.right = deserialize_assist(dataArray);
+    return root;
+}
+// coins可以买到的最多的icecrean数
+/*
+ * Your functions will be called as such:
+ * deserialize(serialize(root));
+*/
+var maxIceCream = function(costs, coins) {
+    costs.sort();
+    var size = costs.length,num = 0;
+    for(let i=0;i<size;++i){
+        coins -= costs[i];
+        if(coins<0)
+            return num;
+        ++num;
+    }
+    return num;
+};
+// 如果字符串中不含有任何 'aaa'，'bbb' 或 'ccc' 这样的字符串作为子串，那么该字符串就是一个「快乐字符串」。
+// 给你三个整数 a，b ，c，请你返回 任意一个 满足下列全部条件的字符串 s：
+/*
+ * @param {number} a
+ * @param {number} b
+ * @param {number} c
+ * @return {string}
+*/
+var longestDiverseString = function(a, b, c) {
+    var num = [[a,'a'],[b,'b'],[c,'c']],ret = "";
+    var sort_order = function(a,b){return b[0]-a[0];}
+    num.sort(sort_order);
+    while(num[0][0]!=0){
+        if(num[0][0]===1){
+            ret += num[0][1];
+            --num[0][0];
+        }
+        else{
+            ret += num[0][1]
+            ret += num[0][1];
+            num[0][0] -= 2;
+        }
+        num.sort(sort_order);
+    }
+    return ret;
+};
+// 数组排序
+/*
+ * @param {number[]} nums
+ * @return {number[]}
+*/
+var sortArray = function(nums) {
+
+};
+// 给定一个字符串，请将字符串里的字符按照出现的频率降序排列。
+// 桶排序
+/**
+ * @param {string} s
+ * @return {string}
+*/
+var frequencySort = function(s) {
+    const frequency = new Map();
+    var size = s.length;
+    var max_frequency = 0;
+    for(let i=0;i<size;++i){
+        let frequency_tem = (frequency.get(ch)||0)+1;
+        frequency.set(s[i],frequency_tem);
+        if(frequency_tem>max_frequency)
+            max_frequency = frequency_tem;
+    }
+    const bucket = new Array(max_frequency+1).fill(null);
+    for(const [ch,ch_frequency] of frequency){
+        if(!bucket[ch_frequency])
+            bucket[ch_frequency] = new ListNode(ch);
+        else{
+            let p = bucket[ch_frequency];
+            while(p.next)
+                p = p.next;
+            p.next = new ListNode(ch);
+        }
+    }
+    const ret = "";
+    for(let i= max_frequency;i>=0;--i){
+        let p = bucket[i];
+        while(p){
+            for(let j = 0;j<i;++j)
+                ret += p.val;
+            p = p.next;
+        }
+    }
+    return ret;
+};
+// 判断两个数组是否能通过交换变为同一个数组
+/*
+ * @param {number[]} target
+ * @param {number[]} arr
+ * @return {boolean}
+ */
+var canBeEqual = function(target, arr) {
+    const arr_num_count = new Map(),target_num_count = new Map();
+    let size = target.length;
+    for(let i =0;i<size;++i){
+        arr_num_count.set(arr[i],(arr_num_count.get(arr[i])||0)+1);
+        target_num_count.set(target[i],(target_num_count.get(target[i])||0)+1);
+    }
+    for(const [num,count] of arr_num_count){
+        if(target_num_count.get(num)!=count)
+            return false;
+    }
+    return true;
+};
+/*
+ * @param {number[]} nums
+ * @return {number}
+*/
+var partitionDisjoint = function(nums) {
+
+};
+/*
+ * @param {number[]} nums
+ * @return {number[]}
+*/
+var findErrorNums = function(nums) {
+    var size = nums.length,ret = new Array(2),counter = new Array(size+1).fill(0),;
+    for(const num of nums)
+        ++counter[num];
+    for(let i=1;i<=size;++i){
+        if(counter[i]===0)
+            num[1] = i;
+        if(counter[i]===2)
+            num[i]= i;
+    }
+    return ret;
+};
+// 我们把数组 A 中符合下列属性的任意连续子数组 B 称为 “山脉”：B.length >= 3
+// 存在 0 < i < B.length - 1 使得 B[0] < B[1] < ... B[i-1] < B[i] > B[i+1] > ... > B[B.length - 1]
+// （注意：B 可以是 A 的任意子数组，包括整个数组 A。） 给出一个整数数组 A，返回最长 “山脉” 的长度。
+/*
+ * @param {number[]} arr
+ * @return {number}
+*/
+ var longestMountain = function(arr) {
+    var size = arr.length;
+    if(size<=2)
+        return 0;
+    var left = new Array(size).fill(0),right = new Array(size).fill(0);
+    for(let i =1;i<size-1;++i){
+        for(let j=i-1;j>=0;--j){
+            if(arr[j]<arr[j+1])
+                ++left[i];
+            else
+                break;
+        }
+        for(let j=i;j<size;++j){
+            if(arr[j]>arr[j+1])
+                ++right[i];
+            else
+                break;
+        }
+    }
+    var ret = 0;
+    for(let i=1;i<size-1;++i)
+        if(left[i]!=0&&right[i]!=0)
+            ret = Math.max(ret,left[i]+right[i]+1);
+    return ret;
+};
+// 寻找主要元素，在数组出现次数大于n/2
+/*
+ * @param {number[]} nums
+ * @return {number}
+*/
+var majorityElement = function(nums) {
+    var cnt = 0,tmp = 0;
+    for(const num of nums){
+        if(cnt===0){
+            cnt = 1;
+            tmp = num;
+        }
+        else
+            cnt += (num===tmp? 1: -1);
+    }
+    cnt = 0;
+    for(const num of nums)
+        if(num===tmp)
+            ++cnt;
+    if(cnt>nums.length/2)
+        return tmp;
+    return -1;
+};
+// 给定一个长度为偶数的整数数组arr,只有对arr进行重组后可以满足“对于每个0<=i<len(arr)/2,都有arr[2*i+1]=2*arr[2*i]”时,返回true
+/*
+ * @param {number[]} arr
+ * @return {boolean}
+*/
+var canReorderDoubled = function(arr){
+    const cntmap = new Map();
+    for(const num of arr)
+        cntmap.set(num,cntmap.get(num)?cntmap.get(num)+1:1);
+    arr.sort((a,b)=>{return Math.abs(a) - Math.abs(b);});
+    for(const num of arr){
+        if (cntmap.get(num) == 0) 
+            continue;
+        if (cntmap.get(2 * num) === 0 || cntmap.get(2 * num) == undefined) 
+            return false;
+        cntmap.set(num, cntmap.get(num) - 1);
+        cntmap.set(2 * num, cntmap.get(2 * num) - 1);
+    }
+    return true;
+};
+// 超市里正在举行打折活动，每隔n个顾客会得到discount的折扣。
+/*
+ * @param {number} n
+ * @param {number} discount
+ * @param {number[]} products
+ * @param {number[]} prices
+*/
+var Cashier = function(n, discount, products, prices) {
+    this.n = n;
+    this.products_map = new Map();
+    this.customer = 0;
+    var size = products.length;
+    for(let i=0;i<size;++i)
+        this.products_map.set(products[i],prices[i]);
+    this.discount = 1 - discount/100;
+};
+
+/** 
+ * @param {number[]} product 
+ * @param {number[]} amount
+ * @return {number}
+ */
+Cashier.prototype.getBill = function(product, amount) {
+    var product_num = product.length;
+    var sum = 0;
+    for(let i =0;i<product_num;++i)
+        sum += this.products_map.get(product[i])*amount[i];
+    ++this.customer;
+    if(this.customer === this.n){
+        this.customer = 0;
+        return sum * this.discount;
+    }
+    return sum;
+};
+/*
+ * Your Cashier object will be instantiated and called as such:
+ * var obj = new Cashier(n, discount, products, prices)
+ * var param_1 = obj.getBill(product,amount)
+*/
+// 最大子数组的和
+/*
+ * @param {number[]} nums
+ * @return {number}
+*/
+var maxSubArray = function(nums) {
+    const dp = new Array(nums.length);
+    var size = nums.length;
+    dp[0] = nums[0];
+    for(let i =1;i<size;++i){
+        if(dp[i-1]>=0)
+            dp[i] = dp[i-1] + nums[i];
+        else
+            dp[i] = nums[i];
+    }
+    return Math.max(...dp);
+};
+// 
+/*
+ * @param {number[]} nums
+ * @return {number}
+*/
+var findShortestSubArray = function(nums) {
+    var size = nums.length;
+    var cnt_map = new Map();
+    for(let i = 0;i<size;++i){
+        let tmp = cnt_map.get(nums[i]);
+        if(tmp){
+            ++tmp[0];
+            tmp[2] = i;
+            cnt_map.set(nums[i],tmp)
+        }
+        else
+            cnt_map.set(nums[i],[1,i,0]);
+    }
+    var max_cnt = 0,min_len = 0;
+    for(const [num,cnt] of cnt_map){
+        if(cnt[0]>max_cnt){
+            max_cnt = cnt[0];
+            min_len = cnt[2] - cnt[1];
+        }
+        else if(cnt[0]===max_cnt){
+            max_cnt = cnt[0];
+            if(min_len<=cnt[2]-cnt[1]){
+                min_len = cnt[2] - cnt[1];
+                console.log(min_len);
+            }
+        }
+    }    
+    return min_len;
+};
+/*
+ * @param {number[]} nums
+ * @return {number}
+*/
+var numberOfArithmeticSlices = function(nums) {
+    var dp = 0,sum = 0;
+    for (let i = 2; i < nums.length;++i) {
+        if (nums[i]-nums[i-1]==nums[i-1]-nums[i-2]) {
+            dp = 1 + dp;
+            sum += dp;
+        }
+        else
+            dp = 0;
+    }
+    return sum;
+};
+/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * function NestedInteger() {
+ *
+ *     Return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     @return {boolean}
+ *     this.isInteger = function() {
+ *         ...
+ *     };
+ *
+ *     Return the single integer that this NestedInteger holds, if it holds a single integer
+ *     Return null if this NestedInteger holds a nested list
+ *     @return {integer}
+ *     this.getInteger = function() {
+ *         ...
+ *     };
+ *
+ *     Set this NestedInteger to hold a single integer equal to value.
+ *     @return {void}
+ *     this.setInteger = function(value) {
+ *         ...
+ *     };
+ *
+ *     Set this NestedInteger to hold a nested list and adds a nested integer elem to it.
+ *     @return {void}
+ *     this.add = function(elem) {
+ *         ...
+ *     };
+ *
+ *     Return the nested list that this NestedInteger holds, if it holds a nested list
+ *     Return null if this NestedInteger holds a single integer
+ *     @return {NestedInteger[]}
+ *     this.getList = function() {
+ *         ...
+ *     };
+ * };
+ */
+/*
+ * @param {string} s
+ * @return {NestedInteger}
+*/
+var deserialize = function(s) {
+
+};
+// 
+/*
+ * Initialize your data structure here.
+*/
+var TimeMap = function() {
+    this.time_map = new Map();
+};
+/* 
+ * @param {string} key 
+ * @param {string} value 
+ * @param {number} timestamp
+ * @return {void}
+*/
+TimeMap.prototype.set = function(key, value, timestamp) {
+    var tmp = this.time_map.get(key);
+    if(tmp)
+        tmp.push([value,timestamp]);
+    else
+        this.time_map.set(key,[[value,timestamp]]);
+};
+
+/** 
+ * @param {string} key 
+ * @param {number} timestamp
+ * @return {string}
+ */
+TimeMap.prototype.get = function(key, timestamp) {
+    var tmp = this.time_map.get(key);
+    if(tmp){
+        let left = 0,right = tmp.length;
+        while(left<=right){
+            let mid = Math.floor((right-left)/2)+left;
+            if(tmp[mid][1]>timestamp) 
+                right = mid - 1;
+            else if(tmp[mid][1] < timestamp) 
+                left = mid + 1;
+            else
+                return tmp[mid][0];
+        }
+    }
+    return "";
+};
+
+/*
+ * Your TimeMap object will be instantiated and called as such:
+ * var obj = new TimeMap()
+ * obj.set(key,value,timestamp)
+ * var param_2 = obj.get(key,timestamp)
+*/
+// 
+/*
+ * @param {number[]} heights
+ * @return {number}
+*/
+var heightChecker = function(heights) {
+    const arr = new Array(101).fill(0);
+    for(const height of heights)
+        ++arr[height];
+    var count = 0,size = arr.length;
+    for(let i=1,j=0;i<size;++i)
+        while (arr[i]-- > 0) 
+            if (heights[j++] != i) 
+                ++count;
+    return count;
+};
+/*
+ * Definition for a binary tree node.
+ * function TreeNode(val) {
+ *     this.val = val;
+ *     this.left = this.right = null;
+ * }
+*/
+// 树的深度
+/*
+ * @param {TreeNode} root
+ * @return {number}
+*/
+var maxDepth = function(root) {
+    if(!root)
+        return 0;
+    return Math.max(maxDepth(root.left),maxDepth(root.right))+1;
+};
+// 
+/*
+ * @param {number} n
+ * @param {number[]} primes
+ * @return {number}
+*/
+var nthSuperUglyNumber = function(n, primes) {
+    const size = primes.length;
+    const arr= new Array(size).fill(1);
+    const ugly_num= new Array(n+1).fill(0);
+    ugly_num[1]=1;
+    for(let i=2;i<=n;++i){
+        let min=Infinity
+        for(let j=0;j<size;++j)
+            min=Math.min(min,ugly_num[arr[j]]*primes[j])
+        for(let k=0;k<size;++k)
+            if(min===ugly_num[arr[k]]*primes[k])
+                ++arr[k];
+        ugly_num[i]=min;
+    }
+    return ugly_num[n];
+};
+/*
+ * @param {number[]} machines
+ * @return {number}
+*/
+var findMinMoves = function(machines) {
+    var average = 0,size = machines.length;
+    for(const machine of machines)
+        average += machine;
+    if(average%size!=0)
+        return -1;
+    average = Math.floor(average/size);
+    for(let i=0;i<size;++i)
+        machines[i] -= average;
+    var cur_sum = 0, max_sum = 0, tmp_res = 0, res = 0;
+    for (const m of machines) {
+        cur_sum += m;
+        max_sum = Math.max(max_sum, Math.abs(cur_sum));
+        tmp_res = Math.max(max_sum, m);
+        res = Math.max(res, tmp_res);
+    }
+    return res;
+}
+//h 指数的定义: “h 代表“高引用次数”（high citations），一名科研人员的 h 指数是指他（她）的 （N 篇论文中）
+// 总共有 h 篇论文分别被引用了至少 h 次。（其余的 N - h 篇论文每篇被引用次数不多于 h 次。）"
+// citations为引用次数
+/*
+ * @param {number[]} citations
+ * @return {number}
+*/
+var hIndex = function(citations) {
+    var size = citations.length;
+    const arr = new Array(size+1).fill(0);
+    for(const citation of citations){
+        if(citation<=size)
+            ++arr[citation];
+        else
+            ++arr[n];
+    }
+    var total = 0;
+    for(let i =n;i>=0;++i){
+        total += arr[i];
+        if(total>=i)
+            return i;
+    }
+    return 0;
+};
+// citations为引用次数，已经为升序
+/*
+ * @param {number[]} citations
+ * @return {number}
+*/
+var hIndex = function(citations) {
+    var n = citations.length;
+    var left =0, right = n-1;
+    while(left<=right){
+        let mid=left+Math.floor((right-left)/2);
+        if (citations[mid] >=n-mid) 
+            right = mid - 1;
+        else
+            left = mid + 1;
+    }
+    return n-left;
+};
+/*
+ * @param {number[]} arr
+ * @return {number}
+*/
+var sumOddLengthSubarrays = function(arr) {
+    var res = 0,size = arr.length;
+    for(let i=0;i<size;++i){
+        var left = i + 1, right=size-i,
+            left_even= Math.floor((left+1)/2),right_even=Math.floor((right+1)/2),
+            left_odd=Math.floor(left/2),right_odd=Math.floor(right/2);
+        res += (left_even * right_even + left_odd * right_odd) * arr[i];
+    }
+    return res;
+};
+// 二分搜索
+/*
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+*/
+var search = function(nums, target) {
+    var left =0,right = nums.length-1;
+    while(left<=right){
+        let mid = Math.floor((right-left)/2)+left;
+        if(nums[mid]===target)
+            return mid;
+        if(nums[mid]<target)
+            left = mid +1;
+        else
+            right = mid-1;
+    }
+    return -1;
+};
+/**
+ * Definition for isBadVersion()
+ * 
+ * @param {integer} version number
+ * @return {boolean} whether the version is bad
+ * isBadVersion = function(version) {
+ *     ...
+ * };
+ */
+/*
+ * @param {function} isBadVersion()
+ * @return {function}
+*/
+var solution = function(isBadVersion) {
+    /**
+     * @param {integer} n Total versions
+     * @return {integer} The first bad version
+     */
+    return function(n) {
+        if(n===1)
+            return 1;
+        var left = 1,right = n;
+        while(left+1!=right){
+            let mid = Math.floor((right-left)/2)+left;
+            if(isBadVersion(mid))
+                right = mid;
+            else
+                left = mid;
+        }
+        return right;
+    };
+};
+/*
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number}
+*/
+var searchInsert = function(nums, target) {
+    var left = 0,right = nums.length;
+    if(!right||nums[0]>=target)
+        return 0;
+    --right;
+    while(right!=left+1){
+        let mid = Math.floor((right-left)/2)+left;
+        if(nums[mid]===target)
+            return mid;
+        if(nums[mid]<target)
+            left = mid;
+        else
+            right = mid;
+    }
+    if(nums[right]===target)
+        return right;
+    else
+        return left;
+};
+// 三数之和为0的三元组
+/*
+ * @param {number[]} nums
+ * @return {number[][]}
+*/
+var threeSum = function(nums) {
+    nums.sort();
+    var ans = [],size = nums.length;
+    for(let first =0;first<size;++first){
+        if(first>0&&nums[first]===nums[first-1])
+            continue;
+        let third = size-1,target = -nums[first];
+        for(let second = first+1;second<size;++second){
+            if(second>first+1&&nums[second]===nums[second-1])
+                continue;
+            while (second<third&&nums[second]+nums[third]>target)
+                --third;
+            if (second === third)
+                break;
+            if (nums[second] + nums[third] === target) 
+                ans.push([nums[first],nums[second],nums[third]]);
+        }
+    }
+    return ans;
+};
+// 给你一个按非递减顺序排序的整数数组nums,返回每个数字的平方组成的新数组,要求也按非递减顺序排序。
+/*
+ * @param {number[]} nums
+ * @return {number[]}
+*/
+var sortedSquares = function(nums) {
+    var negative = -1,size = nums.length;
+    for(let i = 0;i<size;++i)
+        if(nums[i]<0)
+            ++negative;
+        else
+            break;
+    var ans = new Array(size);
+    var left = negative,right = negative +1,j=0;
+    while(left>=0&&right<size){
+        if(nums[right]+nums[left]>=0){
+            ans[j]=nums[left]*nums[left];
+            --left;
+            ++j;
+        }
+        else{
+            ans[j] = nums[right]*nums[right];
+            ++right;
+            ++j;
+        }
+    }
+    while(left>=0){
+        ans[j]= nums[left]*nums[left];
+        --left;
+        ++j;
+    }
+    while(right<size){
+        ans[j]= nums[right]*nums[right];
+        ++right;
+        ++j;
+    }
+    return ans;
+};
+/*
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {void} Do not return anything, modify nums in-place instead.
+*/
+var rotate = function(nums, k) {
+    var size = nums.length;
+    k %= size;
+    const gcd = (x, y) => y ? gcd(y, x % y) : x;
+    var count = gcd(size,k);
+    for(let i =0;i<count;++i){
+        let current = i;
+        let prev = nums[i];
+        do {
+            let next = (current + k) % size;
+            let temp = nums[next];
+            nums[next] = prev;
+            prev = temp;
+            current = next;
+        } while (i !== current);
+    }
+};
+/*
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+ * while(left<right){
+        if(nums[i]===2){
+            tem = nums[i];
+            nums[i] = nums[right];
+            nums[right] = tem;
+            ++right;
+        }
+        else if(nums[i]===0){
+            tem = nums[i];
+            nums[i] = nums[left];
+            nums[left] = tem;
+            ++left;
+        }
+    }
+*/
+var sortColors = function(nums) {
+    var left = 0,right = nums.length-1,tem;
+    for (let i=0; i<=right;++i) {
+        while(i<=right&&nums[i]===2) {
+            tem = nums[i];
+            nums[i] = nums[right];
+            nums[right] = tem;
+            --right;
+        }
+        if (nums[i] == 0) {
+            tem = nums[i];
+            nums[i] = nums[left];
+            nums[left] = tem;
+            ++left;
+        }
+    }
+};
+/*
+ * @param {number[][]} intervals
+ * @return {number[][]}
+*/
+var merge = function(intervals) {
+    var size = intervals.length;
+    if(size===0)
+        return [];
+    intervals.sort();
+    var merged = new Array();
+    for(let i =0;i<size;++i){
+        let L = intervals[i][0], R = intervals[i][1];
+        if (merged.length!==0 || merged[merged.length-1][1] < L)
+            merged.push([L, R]);
+        else
+            merged[merged.length-1][1] = max(merged[merged.length-1][1], R);
+    }
+    return merged;
+};
+// 将数组中0移动至末尾，其他元素相对位置不变
+/*
+ * @param {number[]} nums
+ * @return {void} Do not return anything, modify nums in-place instead.
+*/
+var moveZeroes = function(nums) {
+    var p1 = 0,p2 = 0,size = nums.length,tem;
+    while(p2<size){
+        if(nums[p2]!==0){
+            if(p1!==p2){
+                tem = nums[p2];
+                nums[p2] = nums[p1];
+                nums[p1] = tem;
+            }
+            ++p1;++p2;
+        }
+        else
+            ++p2;
+    }
+    while(p1<size){
+        nums[p1] = 0;
+        ++p1;
+    }
+};
+// numbers升序，寻找两个数相加为target，下标从1开始
+/*
+ * @param {number[]} numbers
+ * @param {number} target
+ * @return {number[]}
+*/
+var twoSum = function(numbers, target) {
+    var left = 0,right = numbers.length-1,tem;
+    while(left<right){
+        tem = numbers[left]+numbers[right];
+        if(tem<target)
+            ++left;
+        else if(tem>target)
+            --right;
+        else
+            return [left,right];
+    }
+};
+// 返回杨辉三角的第rowindex行
+/*
+ * @param {number} rowIndex
+ * @return {number[]}
+*/
+var getRow = function(rowIndex) {
+    const ans = new Array(rowIndex + 1);
+    ans[0] = 1;
+    for (let i=1; i<=rowIndex;++i) 
+        ans[i] = ans[i-1]*(rowIndex-i+1)/i;
+    return ans;
+};
+// 给定一个n×n的二维矩阵matrix表示一个图像.请你将图像顺时针旋转90度。
+/*
+ * @param {number[][]} matrix
+ * @return {void} Do not return anything, modify matrix in-place instead.
+*/
+var rotate = function(matrix) {
+    var size = matrix.length,tem;
+    for (let i=0;i<size/2;++i){
+        for (let j=0;j<size;++j) {
+            tem = matrix[size-i-1][j];
+            matrix[size-i-1][j] = matrix[i][j]; 
+            matrix[i][j] = tem;
+        }
+    }
+    for (let i=0;i<size;++i) {
+        for (let j=0;j<i;++j) {
+            tem = matrix[i][j];
+            matrix[i][j] = matrix[j][i];
+            matrix[j][i] = tem;
+        }
+    }
+};
+// 给你一个正整数n,生成一个包含1到n2所有元素，且元素按顺时针顺序螺旋排列的nxn正方形矩阵matrix。
+/*
+ * @param {number} n
+ * @return {number[][]}
+*/
+var generateMatrix = function(n) {
+
 };

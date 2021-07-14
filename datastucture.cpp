@@ -180,3 +180,77 @@ vector<int> dailyTemperatures(vector<int>& T) {
     res[size-1]=0;
     return res;
 }
+struct Node {
+    int key;
+    int val;
+    Node* next;
+    Node() :next(NULL),key(-1),val(-1){}
+    Node(int _key):key(_key){}
+    Node(int k,int va):key(k),val(va),next(NULL){}
+};
+class MyHashMap {
+protected:
+    vector <Node*> bucket;
+    Node* find_pos(Node* head, int key) {
+        while (head) {
+            if (head->key == key)
+                return head;
+            else
+                head = head->next;
+        }
+        return NULL;
+    }
+    Node* findPosToStore(Node* head, int key) {
+        if(head->key==key)
+            return head;
+        Node* tem = head->next;
+        while (tem) {
+            if(tem->key == key)
+                return tem;
+            else{
+                head = tem;
+                tem = tem->next;
+            }
+        }
+        head->next = new Node(key);
+        return head->next;
+    }
+public:
+    MyHashMap() {
+        bucket = vector <Node*>(2039,NULL);
+    }
+    void put(int key, int value) {
+        Node* pos = bucket[key%2039];
+        if (!pos)
+            bucket[key%2039] = new Node(key, value);
+        else {
+            Node* tem = findPosToStore(pos, key);
+            tem->val = value;
+        }
+    }
+    int get(int key) {
+        Node *pos = find_pos(bucket[key % 2039],key);
+        if (pos)
+            return pos->val;
+        return -1;
+    }
+    void remove(int key) {
+        int n = key % 2039;
+        Node* pos = bucket[n];
+        if (pos) {
+            if (pos->key == key) {
+                bucket[n] = pos->next;
+                delete(pos);
+            }
+            else {
+                while (pos->next) {
+                    if (pos->next->key == key) {
+                        Node* tem = pos->next;
+                        pos->next = tem->next;
+                        delete(tem);
+                    }
+                }
+            }
+        }
+    }
+};
