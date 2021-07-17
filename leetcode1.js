@@ -1,7 +1,7 @@
 /*
  * @Author: zanilia
  * @Date: 2021-06-27 21:38:56
- * @LastEditTime: 2021-07-14 18:58:09
+ * @LastEditTime: 2021-07-15 10:55:30
  * @Descripttion:
 */
 function ListNode(val) {
@@ -883,23 +883,53 @@ var searchInsert = function(nums, target) {
  * @return {number[][]}
 */
 var threeSum = function(nums) {
-    nums.sort();
-    var ans = [],size = nums.length;
-    for(let first =0;first<size;++first){
-        if(first>0&&nums[first]===nums[first-1])
+    // nums.sort();
+    // var ans = [],size = nums.length;
+    // for(let first =0;first<size;++first){
+    //     if(first>0&&nums[first]===nums[first-1])
+    //         continue;
+    //     let third = size-1,target = -nums[first];
+    //     for(let second = first+1;second<size;++second){
+    //         if(second>first+1&&nums[second]===nums[second-1])
+    //             continue;
+    //         while (second<third&&nums[second]+nums[third]>target)
+    //             --third;
+    //         if (second === third)
+    //             break;
+    //         if (nums[second] + nums[third] === target) 
+    //             ans.push([nums[first],nums[second],nums[third]]);
+            
+    //     }
+    // }
+    // return ans;
+    let ans = [];
+    const size = nums.length;
+    if(nums==null||size < 3)
+        return ans;
+    nums.sort((a, b) => a - b); 
+    for (let i=0;i<size;++i) {
+        if(nums[i]>0) 
+            break;
+        if(i > 0 && nums[i] == nums[i-1]) 
             continue;
-        let third = size-1,target = -nums[first];
-        for(let second = first+1;second<size;++second){
-            if(second>first+1&&nums[second]===nums[second-1])
-                continue;
-            while (second<third&&nums[second]+nums[third]>target)
-                --third;
-            if (second === third)
-                break;
-            if (nums[second] + nums[third] === target) 
-                ans.push([nums[first],nums[second],nums[third]]);
+        let left = i+1,right = size-1;
+        while(left<right){
+            let sum = nums[i] + nums[left] + nums[right];
+            if(sum===0){
+                ans.push([nums[i],nums[left],nums[right]]);
+                while (left<right && nums[left] == nums[left+1]) 
+                    left++; 
+                while (left<right && nums[right] == nums[right-1]) 
+                    right--; 
+                left++;
+                right--;
+            }
+            else if (sum < 0) 
+                left++;
+            else if (sum > 0) 
+                right--;
         }
-    }
+    }        
     return ans;
 };
 // 给你一个按非递减顺序排序的整数数组nums,返回每个数字的平方组成的新数组,要求也按非递减顺序排序。
@@ -965,20 +995,6 @@ var rotate = function(nums, k) {
 /*
  * @param {number[]} nums
  * @return {void} Do not return anything, modify nums in-place instead.
- * while(left<right){
-        if(nums[i]===2){
-            tem = nums[i];
-            nums[i] = nums[right];
-            nums[right] = tem;
-            ++right;
-        }
-        else if(nums[i]===0){
-            tem = nums[i];
-            nums[i] = nums[left];
-            nums[left] = tem;
-            ++left;
-        }
-    }
 */
 var sortColors = function(nums) {
     var left = 0,right = nums.length-1,tem;
@@ -1016,48 +1032,6 @@ var merge = function(intervals) {
     }
     return merged;
 };
-// 将数组中0移动至末尾，其他元素相对位置不变
-/*
- * @param {number[]} nums
- * @return {void} Do not return anything, modify nums in-place instead.
-*/
-var moveZeroes = function(nums) {
-    var p1 = 0,p2 = 0,size = nums.length,tem;
-    while(p2<size){
-        if(nums[p2]!==0){
-            if(p1!==p2){
-                tem = nums[p2];
-                nums[p2] = nums[p1];
-                nums[p1] = tem;
-            }
-            ++p1;++p2;
-        }
-        else
-            ++p2;
-    }
-    while(p1<size){
-        nums[p1] = 0;
-        ++p1;
-    }
-};
-// numbers升序，寻找两个数相加为target，下标从1开始
-/*
- * @param {number[]} numbers
- * @param {number} target
- * @return {number[]}
-*/
-var twoSum = function(numbers, target) {
-    var left = 0,right = numbers.length-1,tem;
-    while(left<right){
-        tem = numbers[left]+numbers[right];
-        if(tem<target)
-            ++left;
-        else if(tem>target)
-            --right;
-        else
-            return [left,right];
-    }
-};
 // 返回杨辉三角的第rowindex行
 /*
  * @param {number} rowIndex
@@ -1069,34 +1043,4 @@ var getRow = function(rowIndex) {
     for (let i=1; i<=rowIndex;++i) 
         ans[i] = ans[i-1]*(rowIndex-i+1)/i;
     return ans;
-};
-// 给定一个n×n的二维矩阵matrix表示一个图像.请你将图像顺时针旋转90度。
-/*
- * @param {number[][]} matrix
- * @return {void} Do not return anything, modify matrix in-place instead.
-*/
-var rotate = function(matrix) {
-    var size = matrix.length,tem;
-    for (let i=0;i<size/2;++i){
-        for (let j=0;j<size;++j) {
-            tem = matrix[size-i-1][j];
-            matrix[size-i-1][j] = matrix[i][j]; 
-            matrix[i][j] = tem;
-        }
-    }
-    for (let i=0;i<size;++i) {
-        for (let j=0;j<i;++j) {
-            tem = matrix[i][j];
-            matrix[i][j] = matrix[j][i];
-            matrix[j][i] = tem;
-        }
-    }
-};
-// 给你一个正整数n,生成一个包含1到n2所有元素，且元素按顺时针顺序螺旋排列的nxn正方形矩阵matrix。
-/*
- * @param {number} n
- * @return {number[][]}
-*/
-var generateMatrix = function(n) {
-
 };
