@@ -427,7 +427,7 @@ vector<int> findAnagrams(string s, string p) {
     int inWindow[26]={0},target[26]={0};vector<int> res;
     for(int i=0;i<n;++i)
         ++target[p[i]-'a'];
-    for(int i=0;i<right;++i)
+    for(int i=0;i<right&&i<size;++i)
         ++inWindow[s[i]-'a'];
     if(check(inWindow,target))
         res.push_back(0);

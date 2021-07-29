@@ -1,7 +1,7 @@
 /*
  * @Author: zanilia
  * @Date: 2021-06-27 21:38:56
- * @LastEditTime: 2021-07-15 10:55:30
+ * @LastEditTime: 2021-07-25 13:15:13
  * @Descripttion:
 */
 function ListNode(val) {
@@ -120,59 +120,6 @@ var numBusesToDestination = function(routes, source, target) {
     }
     return ret === Number.MAX_VALUE ? -1 : ret;
 };
-// !error return NaN
-// 给你一个points 数组，表示 2D 平面上的一些点，其中 points[i] = [xi, yi] 。
-// 连接点 [xi, yi] 和点 [xj, yj] 的费用为它们之间的 曼哈顿距离 ：|xi - xj| + |yi - yj| ，其中 |val| 表示 val 的绝对值。
-// 请你返回将所有点连接的最小总费用。只有任意两点之间 有且仅有 一条简单路径时，才认为所有点都已连接。
-function UnionSet(n){
-    this.size = n;
-    this.rank = new Array(n).fill(1);
-    this.f = new Array(n);
-    for(let i=0;i<n;++i)
-        this.f[i] = i;
-    this.find = function(x){
-        if (this.f[x] === x) 
-            return x;
-        this.f[x] = this.find(this.f[x]);
-        return this.f[x];
-    }
-    this.join = function(x,y){
-        let fx = this.find(x), fy = this.find(y);
-        if (fx === fy) 
-            return false;
-        if (this.rank[fx] < this.rank[fy])
-            [fx, fy] = [fy, fx];
-        this.rank[fx] += this.rank[fy];
-        this.f[fy] = fx;
-        return true;
-    }
-}
-/*
- * @param {number[][]} points
- * @return {number}
-*/
-var minCostConnectPoints = function(points) {
-    const size = points.length;
-    const unoin_set = new UnionSet(size);
-    const edge = [];
-    var distance = function(i,j){
-        return Math.abs(points[i][0]-points[j][0])+Math.abs(points[i][1]-points[j][1]);
-    }
-    for(let i=0;i<size;++i)
-        for(let j=i+1;j<size;++j)
-            edge.push([i,j,distance[i,j]]);
-    edge.sort((a,b)=>a[2]-b[2]);
-    var ret = 0,num = 1;
-    for(const [i,j,length] of edge){
-        if(unoin_set.join(i,j)){
-            ret += length;
-            ++num;
-            if(num==size)
-                break;
-        }
-    }
-    return ret;
-};
 // 给你二叉树的根结点 root ，请你将它展开为一个单链表：
 // 展开后的单链表应该同样使用 TreeNode ，其中 right 子指针指向链表中下一个结点，而左子指针始终为 null 。
 // 展开后的单链表应该与二叉树 先序遍历 顺序相同。
@@ -254,7 +201,6 @@ var deserialize = function(data) {
     dataArray = data.split(',');
     return deserialize_assist(dataArray,root);
 };
-
 var deserialize_assist = function(dataArray){
     if(dataArray[0]=='null'){
         dataArray.shift();
@@ -307,14 +253,6 @@ var longestDiverseString = function(a, b, c) {
     }
     return ret;
 };
-// 数组排序
-/*
- * @param {number[]} nums
- * @return {number[]}
-*/
-var sortArray = function(nums) {
-
-};
 // 给定一个字符串，请将字符串里的字符按照出现的频率降序排列。
 // 桶排序
 /**
@@ -360,7 +298,8 @@ var frequencySort = function(s) {
  * @return {boolean}
  */
 var canBeEqual = function(target, arr) {
-    const arr_num_count = new Map(),target_num_count = new Map();
+    const arr_num_count = new Map();
+    const target_num_count = new Map();
     let size = target.length;
     for(let i =0;i<size;++i){
         arr_num_count.set(arr[i],(arr_num_count.get(arr[i])||0)+1);
@@ -371,13 +310,6 @@ var canBeEqual = function(target, arr) {
             return false;
     }
     return true;
-};
-/*
- * @param {number[]} nums
- * @return {number}
-*/
-var partitionDisjoint = function(nums) {
-
 };
 /*
  * @param {number[]} nums
@@ -486,12 +418,11 @@ var Cashier = function(n, discount, products, prices) {
         this.products_map.set(products[i],prices[i]);
     this.discount = 1 - discount/100;
 };
-
-/** 
+/* 
  * @param {number[]} product 
  * @param {number[]} amount
  * @return {number}
- */
+*/
 Cashier.prototype.getBill = function(product, amount) {
     var product_num = product.length;
     var sum = 0;
@@ -576,52 +507,7 @@ var numberOfArithmeticSlices = function(nums) {
     }
     return sum;
 };
-/**
- * // This is the interface that allows for creating nested lists.
- * // You should not implement it, or speculate about its implementation
- * function NestedInteger() {
- *
- *     Return true if this NestedInteger holds a single integer, rather than a nested list.
- *     @return {boolean}
- *     this.isInteger = function() {
- *         ...
- *     };
- *
- *     Return the single integer that this NestedInteger holds, if it holds a single integer
- *     Return null if this NestedInteger holds a nested list
- *     @return {integer}
- *     this.getInteger = function() {
- *         ...
- *     };
- *
- *     Set this NestedInteger to hold a single integer equal to value.
- *     @return {void}
- *     this.setInteger = function(value) {
- *         ...
- *     };
- *
- *     Set this NestedInteger to hold a nested list and adds a nested integer elem to it.
- *     @return {void}
- *     this.add = function(elem) {
- *         ...
- *     };
- *
- *     Return the nested list that this NestedInteger holds, if it holds a nested list
- *     Return null if this NestedInteger holds a single integer
- *     @return {NestedInteger[]}
- *     this.getList = function() {
- *         ...
- *     };
- * };
- */
-/*
- * @param {string} s
- * @return {NestedInteger}
-*/
-var deserialize = function(s) {
-
-};
-// 
+// 带时间戳的map
 /*
  * Initialize your data structure here.
 */
@@ -641,12 +527,11 @@ TimeMap.prototype.set = function(key, value, timestamp) {
     else
         this.time_map.set(key,[[value,timestamp]]);
 };
-
-/** 
+/*
  * @param {string} key 
  * @param {number} timestamp
  * @return {string}
- */
+*/
 TimeMap.prototype.get = function(key, timestamp) {
     var tmp = this.time_map.get(key);
     if(tmp){
@@ -663,14 +548,12 @@ TimeMap.prototype.get = function(key, timestamp) {
     }
     return "";
 };
-
 /*
  * Your TimeMap object will be instantiated and called as such:
  * var obj = new TimeMap()
  * obj.set(key,value,timestamp)
  * var param_2 = obj.get(key,timestamp)
 */
-// 
 /*
  * @param {number[]} heights
  * @return {number}
@@ -883,25 +766,6 @@ var searchInsert = function(nums, target) {
  * @return {number[][]}
 */
 var threeSum = function(nums) {
-    // nums.sort();
-    // var ans = [],size = nums.length;
-    // for(let first =0;first<size;++first){
-    //     if(first>0&&nums[first]===nums[first-1])
-    //         continue;
-    //     let third = size-1,target = -nums[first];
-    //     for(let second = first+1;second<size;++second){
-    //         if(second>first+1&&nums[second]===nums[second-1])
-    //             continue;
-    //         while (second<third&&nums[second]+nums[third]>target)
-    //             --third;
-    //         if (second === third)
-    //             break;
-    //         if (nums[second] + nums[third] === target) 
-    //             ans.push([nums[first],nums[second],nums[third]]);
-            
-    //     }
-    // }
-    // return ans;
     let ans = [];
     const size = nums.length;
     if(nums==null||size < 3)
@@ -938,7 +802,8 @@ var threeSum = function(nums) {
  * @return {number[]}
 */
 var sortedSquares = function(nums) {
-    var negative = -1,size = nums.length;
+    var negative = -1;
+    var size = nums.length;
     for(let i = 0;i<size;++i)
         if(nums[i]<0)
             ++negative;
@@ -992,6 +857,7 @@ var rotate = function(nums, k) {
         } while (i !== current);
     }
 };
+// 给定一个包含红色(0),白色(1)和蓝色(2)，一共n个元素的数组,原地对它们进行排序,使得相同颜色的元素相邻,并按照红色,白色,蓝色顺序排列。
 /*
  * @param {number[]} nums
  * @return {void} Do not return anything, modify nums in-place instead.
@@ -1043,4 +909,108 @@ var getRow = function(rowIndex) {
     for (let i=1; i<=rowIndex;++i) 
         ans[i] = ans[i-1]*(rowIndex-i+1)/i;
     return ans;
+};
+/*
+ * @param {ListNode} head
+ * @return {ListNode}
+*/
+var swapPairs = function(head) {
+    if(!head)
+        return null;
+    var ret,tmp;
+    if(head.next){
+        ret = head.next;
+        head.next =ret.next;
+        ret.next = head;
+    }
+    while(head.next){
+        if(head.next.next){
+            tmp = head.next;
+            head.next = tmp.next;
+            tmp.next = head.next.next
+            head.next.next = tmp;
+            head = head.next.next;
+        }
+        else
+            head = head.next;
+    }
+    return ret;
+};
+// 给定一个三角形 triangle ，找出自顶向下的最小路径和。
+// 每一步只能移动到下一行中相邻的结点上。相邻的结点 在这里指的是下标与上一层结点下标相同或者等于上一层结点下标+1的两个结点。
+/*
+ * @param {number[][]} triangle
+ * @return {number}
+*/
+var minimumTotal = function(triangle) {
+    const size = triangle.length;
+    if(size===1)
+        return triangle[0][0];
+    const dp = new Array(2);
+    dp[0] = new Array(size);dp[1] = new Array(size);
+    dp[0][0] = triangle[0][0];
+    var curr, prev;
+    for(let i=1;i<size;++i){
+        curr = i%2;prev = 1 - curr;
+        dp[curr][0] = dp[prev][0] + triangle[i][0];
+        for(let j=1;j<i;++j)
+            dp[curr][j] = Math.min(dp[prev][j],dp[prev][j-1])+triangle[i][j];
+        dp[curr][i] = dp[prev][i-1] + triangle[i][i];
+    }
+    return Math.min(...dp[curr]);
+}
+// 空间压缩
+var minimumTotal = function(triangle) {
+    const size = triangle.length;
+    const dp = new Array(size);
+    dp[0] = triangle[0][0];
+    for(let i=1;i<size;++i){
+        dp[i] = dp[i-1] + triangle[i][i];
+        for(let j=i-1;j>0;--j)
+            dp[j] = Math.min(dp[j],dp[j-1])+triangle[i][j];
+        dp[0]  += triangle[i][0];
+    }
+    return Math.min(...dp);
+};
+/*
+ * @param {string} time
+ * @return {string}
+*/
+var maximumTime = function(time) {
+    const arr = Array.from(time);
+    if (arr[0] === '?') 
+        arr[0] = ('4' <= arr[1] && arr[1] <= '9') ? '1' : '2';
+    if (arr[1] === '?') 
+        arr[1] = (arr[0] == '2') ? '3' : '9';
+    if (arr[3] === '?') 
+        arr[3] = '5';
+    if (arr[4] === '?') 
+        arr[4] = '9';
+    return arr.join('');
+};
+// 给定一个数组 A，将其划分为两个连续子数组 left 和 right， 使得：left 中的每个元素都小于或等于 right 中的每个元素。
+// left 和 right 都是非空的。left 的长度要尽可能小。返回left子数组的长度
+//  @param {number[]} nums @return {number}
+var partitionDisjoint = function(nums) {
+    const size = nums.length;
+    const left_max = new Array(size),right_min = new Array(size);
+    left_max[0] = nums[0];
+    for(let i=0;i<size;++i)
+        left_max[0] = Math.max(left_max[i-1],nums[i]);
+    right_min[size-1] = nums[size-1];
+    for(let i=size-2;i>=0;--i)
+        right_min[i] = Math.min(right_min[i+1],nums[i]); 
+    for(let i=1;i<size;++i)
+        if(left_max[i-1]<=right_min[i])
+            return i;
+};
+// 颠倒给定的 32 位无符号整数的二进制位。分治方法
+// @param {number} n - a positive integer @return {number} - a positive integer
+var reverseBits = function(n) {
+    const M1 = 0x55555555,M2 = 0x33333333,M4 = 0x0f0f0f0f,M8 = 0x00ff00ff; 
+    n = n >>> 1 & M1 | (n & M1) << 1;
+    n = n >>> 2 & M2 | (n & M2) << 2;
+    n = n >>> 4 & M4 | (n & M4) << 4;
+    n = n >>> 8 & M8 | (n & M8) << 8;
+    return (n >>> 16 | n << 16) >>> 0;
 };
