@@ -1,7 +1,7 @@
 /*
  * @Author: zanilia
  * @Date: 2021-07-23 11:45:23
- * @LastEditTime: 2021-07-29 12:30:33
+ * @LastEditTime: 2021-07-30 10:35:53
  * @Descripttion: 
 */
 function ListNode(val, next) {
@@ -467,6 +467,9 @@ const binarySearch = (nums, target) => {
     }
     return left;
 };
+// 给定一个非空特殊的二叉树，每个节点都是正数，并且每个节点的子节点数量只能为 2 或 0。如果一个节点有两个子节点的话，
+// 那么该节点的值等于两个子节点中较小的一个。更正式地说，root.val = min(root.left.val, root.right.val) 总成立。
+// 给出这样的一个二叉树，你需要输出所有节点中的第二小的值。
 /**
  * @param {TreeNode} root
  * @return {number}
@@ -785,6 +788,10 @@ var find132pattern = function(nums) {
     }
     return false;
 };
+// 给定两个由一些 闭区间 组成的列表，firstList 和 secondList ，其中 firstList[i] = [starti, endi] 
+// 而 secondList[j] = [startj, endj] 。每个区间列表都是成对 不相交 的，并且 已经排序 。
+// 返回这 两个区间列表的交集 。形式上，闭区间 [a, b]（其中 a <= b）表示实数 x 的集合，而 a <= x <= b 。
+// 两个闭区间的 交集 是一组实数，要么为空集，要么为闭区间。例如，[1, 3] 和 [2, 4] 的交集为 [2, 3] 。
 /**
  * @param {number[][]} firstList
  * @param {number[][]} secondList
@@ -805,4 +812,205 @@ var intervalIntersection = function(firstList, secondList) {
             ++p2;
     }
     return ans;
+};
+// 元素乘积小于k的连续子数组个数，数组元素均为正整数
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var numSubarrayProductLessThanK = function(nums, k) {
+    var left = nums.length-1,right = left,multiple_res  =nums[left];
+    var res = 0;
+    while(left>=0){
+        while(multiple_res>=k&&right>=left){
+            multiple_res /= nums[right];
+            --right;
+        }
+        res += right - left+1;
+        multiple_res *= nums[--left];
+    }
+    return res;
+};
+// 元素和>=target的最小连续子数组长度
+/**
+ * @param {number} target
+ * @param {number[]} nums
+ * @return {number}
+ */
+var minSubArrayLen = function(target, nums) {
+    var left = 0,right = 0,sum  =nums[0];
+    const size = nums.length;
+    var res = Infinity;
+    while(left<size){
+        while(right<size&&sum<target)
+            sum += nums[++right];
+        if(sum>=target)
+            res = Math.min(right - left+1,res);
+        sum -= nums[left];
+        ++left;
+    }
+    return res===Infinity? 0:res;
+};
+// 判断多少个平方数和为n
+// 四平方和定理证明了任意一个正整数都可以被表示为至多四个正整数的平方和。这给出了本题的答案的上界。同时四平方和定理包含了一个更强的结论：
+// 当且仅当n!=pow(4,k)*(4*m+7)时，可以被表示为至多三个正整数的平方和
+/**
+ * @param {number} n
+ * @return {number}
+ */
+var numSquares = function(n) {
+    if(isSquareNumber(n))
+        return 1;
+    if(checkAnswer(n))
+        return 4;
+    var max_i = Math.floor(Math.sqrt(n));
+    for(let i =0;i<=max_i;++i)
+        if(isSquareNumber(n-i*i))
+            return 2;
+    return 3;
+};
+const isSquareNumber = (n)=>{
+    let m = Math.floor(Math.sqrt(n));
+    return n === m*m;
+}
+const checkAnswer = (n)=>{
+    while (n%4 === 0)
+        n /= 4;
+    return n%8 === 7;
+}
+// 对于给定的整数 n, 如果n的k（k>=2）进制数的所有数位全为1，则称 k（k>=2）是 n 的一个好进制。
+// 以字符串的形式给出 n, 以字符串的形式返回 n 的最小好进制。
+/**
+ * @param {string} n
+ * @return {string}
+ */
+var smallestGoodBase = function(n) {
+    const value_of_n = parseInt(n);
+    const m_max = Math.floor(Math.log(value_of_n) / Math.log(2));
+    for (let m = m_max; m > 1; m--) {
+        const k = BigInt(Math.floor(Math.pow(value_of_n, 1.0 / m)));
+        if (k > 1) {
+            let mul = BigInt(1), sum = BigInt(1);
+            for (let i = 1; i <= m; i++) {
+                mul *= k;
+                sum += mul;
+            }
+            if (sum === BigInt(n)) {
+                return k + '';
+            }
+        }
+    }
+    return (BigInt(n) - BigInt(1)) + '';
+};
+// 二叉树的最近公共祖先
+/**
+ * @param {TreeNode} root
+ * @param {TreeNode} p
+ * @param {TreeNode} q
+ * @return {TreeNode}
+ */
+var lowestCommonAncestor = function(root, p, q) {
+    var ans;
+    const dfs = (node) =>{
+        if(!node)
+            return false;
+        const left = dfs(node.left);
+        const right = dfs(node.right);
+        if((left&&right)||((node.val===p.val||node.val===q.val)&&(left||right)))
+            ans = node;
+        return left||right||(node.val===p.val||node.val===q.val);
+    }
+    dfs(root,p,q);
+    return ans;
+};
+// 在一棵无限的二叉树上，每个节点都有两个子节点，树中的节点 逐行 依次按 “之” 字形进行标记。如下图所示，在奇数行（即，第一行、第三行、第五行……）
+// 中，按从左到右的顺序进行标记；而偶数行（即，第二行、第四行、第六行……）中，按从右到左的顺序进行标记。
+// 给你树上某一个节点的标号 label，请你返回从根节点到该标号为 label 节点的路径，该路径是由途经的节点标号所组成的。
+/**
+ * @param {number} label
+ * @return {number[]}
+ */
+var pathInZigZagTree = function(label) {
+    var row = 0,m = 1;
+    while((m<<1)<=label){
+        ++row;
+        m <<=1;
+    }
+    const ans = new Array(row+1);
+    ans[row] = label;
+    var pos = posToValue(label,row);
+    while(pos!==0){
+        --row;
+        pos >>=1;
+        ans[row] = posToValue(pos,row);
+    }
+    return ans;
+};
+const posToValue = (pos,row)=>{
+    if((row&1)===0)
+        return (1<<(row+1))- 1-pos+(1<<row);
+    else
+        return pos;
+}
+// 给你二叉树的根节点 root 和一个表示目标和的整数 targetSum ，判断该树中是否存在 根节点到叶子节点 的路径，
+// 这条路径上所有节点值相加等于目标和 targetSum 。叶子节点 是指没有子节点的节点。
+/**
+ * @param {TreeNode} root
+ * @param {number} targetSum
+ * @return {boolean}
+ */
+var hasPathSum = function(root, targetSum) {
+    var path_length = 0;
+    const pathSumAssist = (node)=>{
+        if(!node)
+            return false;
+        path_length += node.val;
+        if(!node.left&&!node.right&&path_length===targetSum)
+            return true;
+        if(pathSumAssist(node.left)||pathSumAssist(node.right))
+            return true;
+        path_length -= node.val;
+        return false;
+    }
+    return pathSumAssist(root);
+};
+// 你一个字符串 columnTitle ，表示 Excel 表格中的列名称。返回该列名称对应的列序号。 例如A -> 1 B -> 2 C -> 3 
+// ... Z -> 26 AA -> 27 AB -> 28 
+/**
+ * @param {string} columnTitle
+ * @return {number}
+ */
+var titleToNumber = function(columnTitle) {
+    var ret = 0;
+    const size = columnTitle.length,code_A = 'A'.charCodeAt(0);
+    for(let i =0;i<size;++i)
+        ret = ret*26+columnTitle.charCodeAt(i) - code_A;
+    return ret;
+};
+// 给你一个由 '1'（陆地）和 '0'（水）组成的的二维网格，请你计算网格中岛屿的数量.岛屿总是被水包围，
+// 并且每座岛屿只能由水平方向和/或竖直方向上相邻的陆地连接形成。此外，你可以假设该网格的四条边均被水包围。
+/**
+ * @param {character[][]} grid
+ * @return {number}
+ */
+var numIslands = function(grid) {
+    const m = grid.length,n = grid[0].length;
+    const dfs = (i,j)=>{
+        if(i>=0&&i<m&&j>=0&&j<n&&grid[i][j]==='1'){
+            grid[i][j] = '0';
+            dfs(i-1,j);
+            dfs(i+1,j);
+            dfs(i,j-1);
+            dfs(i,j+1);
+            return true;
+        }
+        return false;
+    }
+    var ret = 0;
+    for(let i=0;i<m;++i)
+        for(let j=0;j<n;++j)
+            if(dfs(i,j))
+                ++ret;
+    return ret;
 };

@@ -765,3 +765,36 @@ vector<int> countBits(int num) {
             res[i]=res[i>>1]+i&1;
     return res;
 }
+// 多线程，按序打印
+class Foo {
+    std::mutex m1,m2;
+public:
+    Foo() {
+        m1.lock();
+        m2.lock();
+    }
+
+    void first(std::function<void()> printFirst) {
+        
+        // printFirst() outputs "first". Do not change or remove this line.
+        printFirst();
+        m1.unlock();
+    }
+
+    void second(std::function<void()> printSecond) {
+        
+        // printSecond() outputs "second". Do not change or remove this line.
+        m1.lock();
+        printSecond();
+        m1.unlock();
+        m2.unlock();
+    }
+
+    void third(std::function<void()> printThird) {
+        
+        // printThird() outputs "third". Do not change or remove this line.
+        m2.lock();
+        printThird();
+        m2.unlock();
+    }
+};
