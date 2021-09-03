@@ -1,10 +1,11 @@
 '''
 Author: zanilia
 Date: 2021-07-30 13:01:40
-LastEditTime: 2021-07-30 16:23:44
+LastEditTime: 2021-08-26 18:12:53
 Descripttion: 
 '''
-from typing import List
+import heapq
+from typing import Counter, List, runtime_checkable
 class Solution:
     def findJudge(self, n: int, trust: List[List[int]]) -> int:
         if n==1:
@@ -78,9 +79,49 @@ class Solution:
             else:
                 return dfs(node.right,False,True,True)+dfs(node.left,False,True,True)+1
         return dfs(root,False,False,True)
-
-        # if not node:
-        #         return 0
-        #     if is_left:
-        #         return dfs(node.right,False,False,True)+dfs(node.left,True,True,True)+1
-        #     return dfs(node.left,False,False,True)+dfs(node.right,True,True,True)+1
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        def quicksort(nums:List[int],left:int,right:int,k:int):
+            pos = left
+            i = left+1
+            j = right
+            while(i<=j):
+                if nums[i] < nums[left]:
+                    nums[i],nums[j] = nums[j],nums[i]
+                    j -= 1
+                else:
+                    i +=1
+                    pos += 1
+            nums[left],nums[pos] = nums[pos],nums[left]
+            if pos < k-1:
+                quicksort(nums,pos+1,right,k)
+            elif pos > k-1:
+                quicksort(nums,left,pos-1,k)            
+        quicksort(nums,0,len(nums)-1,k)
+        return nums[k-1]
+    def frequencySort(self, s: str) -> str:
+        return ''.join(c*x for x,c in Counter(s).most_common())
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        return [x for x,c in Counter(nums).most_common()][:k]
+    def kClosest(self, points:List[List[int]], k:int):
+        def cmp(a:List[int],b:List[int])->bool:
+            return a[0]*a[0]+a[1]*a[1]<b[0]*b[0]+b[1]*b[1];
+        def quicksort(nums:List[List[int]],left:int,right:int,k:int):
+            pos = left
+            i = left+1
+            j = right
+            while(i<=j):
+                if cmp(nums[i],nums[left]):
+                    i +=1
+                    pos += 1
+                else:
+                    nums[i],nums[j] = nums[j],nums[i]
+                    j -= 1
+            nums[left],nums[pos] = nums[pos],nums[left]
+            if pos < k-1:
+                quicksort(nums,pos+1,right,k)
+            quicksort(nums,left,pos-1,k)
+        quicksort(points,0,len(points)-1,k)
+        return points[:k]
+    def reverseStr(self, s: str, k: int) -> str:
+        s = list(s)
+        
