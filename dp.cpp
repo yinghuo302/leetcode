@@ -180,34 +180,6 @@ int longestCommonSubsequence(string text1, string text2) {
         }
     return dp[size1-1][size2-1];
 }
-/*
-int longestCommonSubsequence(string text1, string text2) {
-    int n=text1.size(),m=text2.size();
-	int dp[m+1],last=0,temp;
-	fill(dp,dp+m+1,0);
-    for(int i=1;i<=n;++i,last=0){
-		for(int j=1;j<=m;++j){
-			temp=dp[j];
-			if(text1[i-1]==text2[j-1])	dp[j]=last+1; 
-			else	 dp[j]=max(dp[j],dp[j-1]);
-			last=temp;
-		}
-    }
-	return dp[m];
-}
-
-int longestCommonSubsequence1(string text1, string text2) {
-    int size1=text1.size(),size2=text2.size();
-    int dp[size1+1];//dp数组存储的是text1的前i位与text2的最长公共子序列
-    dp[0]=0;
-    for(int i=1;i<=size1;++i){
-        int tem=0;
-        for(int j=1;j<=size2;++j){
-            if(text1[i-1]==text2[j-1])
-        }
-    }
-}
-*/
 //最长回文子序列，子序列不连续
 int longestPalindromeSubseq(string s) {
     int n = s.size();
@@ -474,4 +446,73 @@ int maxTurbulenceSize(vector<int>& arr) {
             dp[i]=(arr[i]==arr[i-1])? 1 : 2;
     }
     return max(dp,n);
+}
+// 673. 最长递增子序列的个数 https://leetcode-cn.com/problems/number-of-longest-increasing-subsequence/
+// 给定一个未排序的整数数组 nums，返回最长递增子序列的个数 。注意 这个数列必须是 严格 递增的。
+int findNumberOfLIS(vector<int>& nums) {
+    int size = nums.size();
+    int cnt[size],dp[size];
+    int ans = 0,max_len =0;
+    for(int i=0;i<size;++i){
+        dp[i] = 1;
+        cnt[i] = 1;
+        for (int j=0;j<i;++j) {
+            if (nums[i]>nums[j]) {
+                if (dp[j]+1>dp[i]) {
+                    dp[i] = dp[j]+1;
+                    cnt[i] = cnt[j];
+                } 
+                else if(dp[j]+1==dp[i])
+                    cnt[i] += cnt[j];
+            }
+        }
+        if(dp[i]>max_len){
+            max_len = dp[i];
+            ans = cnt[i];
+        }
+        else if(dp[i]==max_len)
+            ans += cnt[i];
+    }
+    return ans;
+}
+// 688. 骑士在棋盘上的概率 https://leetcode-cn.com/problems/knight-probability-in-chessboard/
+// 在一个 n x n 的国际象棋棋盘上，一个骑士从单元格 (row, column) 开始，并尝试进行 k 次移动。行和列是 从 0 开始 的，所以左上单元格是 (0,0) ，右下单元格是 (n - 1, n - 1) 。象棋骑士有8种可能的走法，如下图所示。每次移动在基本方向上是两个单元格，然后在正交方向上是一个单元格。每次骑士要移动时，它都会随机从8种可能的移动中选择一种(即使棋子会离开棋盘)，然后移动到那里。骑士继续移动，直到它走了 k 步或离开了棋盘。返回 骑士在棋盘停止移动后仍留在棋盘上的概率 。
+class Solution {
+    int dirs[8][2] = {{-2, -1}, {-2, 1}, {2, -1}, {2, 1}, {-1, -2}, {-1, 2}, {1, -2}, {1, 2}};
+public:
+    double knightProbability(int n, int k, int row, int column) {
+        double dp[k][n][n];
+        for (int step=0;step<=k;step++) {
+            for (int i=0;i<n;i++) {
+                for (int j=0;j<n;j++) {
+                    if (step == 0)
+                        dp[0][i][j] = 1;
+                    else {
+                        dp[step][i][j] = 0;
+                        for (int a=0;a<8;++a) {
+                            int x = i+dirs[a][0], y = j+dirs[a][1];
+                            if (x>=0&&x<n&&y>=0&&y<n)
+                                dp[step][i][j] += dp[step-1][x][y]/8;
+                        }
+                    }
+                }
+            }
+        }
+        return dp[k][row][column];
+    }
+};
+// 174. 地下城游戏https://leetcode-cn.com/problems/dungeon-game/
+// 一些恶魔抓住了公主（P）并将她关在了地下城的右下角。地下城是由 M x N 个房间组成的二维网格。我们英勇的骑士（K）最初被安置在左上角的房间里，他必须穿过地下城并通过对抗恶魔来拯救公主。骑士的初始健康点数为一个正整数。如果他的健康点数在某一时刻降至 0 或以下，他会立即死亡。有些房间由恶魔守卫，因此骑士在进入这些房间时会失去健康点数（若房间里的值为负整数，则表示骑士将损失健康点数）；其他房间要么是空的（房间里的值为 0），要么包含增加骑士健康点数的魔法球（若房间里的值为正整数，则表示骑士将增加健康点数）。为了尽快到达公主，骑士决定每次只向右或向下移动一步。编写一个函数来计算确保骑士能够拯救到公主所需的最低初始健康点数。
+int calculateMinimumHP(vector<vector<int>>& dungeon) {
+    int m = dungeon.size(), n = dungeon[0].size();
+    int dp[n];
+    dp[n-1] = max(1-dungeon[m-1][n-1],1);
+    for(int i=n-2;i>=0;--i)
+        dp[i] = max(dp[i+1]-dungeon[m-1][i],1);
+    for(int i=m-2;i>=0;--i){
+        dp[n-1] = max(dp[n-1]-dungeon[i][n-1],1);
+        for(int j=n-2;j>=0;--j)
+            dp[j] = max(min(dp[j],dp[j+1])-dungeon[i][j],1);
+    }
+    return dp[0];
 }
