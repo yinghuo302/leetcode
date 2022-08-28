@@ -84,8 +84,7 @@ public:
  * void put(int key, int value) - 如果键 key 已存在，则变更其值；如果键不存在，请插入键值对。当缓存达到其容量 capacity 时，则应该在插入新项之前，移除最不经常使用的项。在此问题中，当存在平局（即两个或更多个键具有相同使用频率）时，应该去除 最近最久未使用 的键。
  * 为了确定最不常使用的键，可以为缓存中的每个键维护一个 使用计数器 。使用计数最小的键是最久未使用的键。当一个键首次插入到缓存中时，它的使用计数器被设置为 1 (由于 put 操作)。对缓存中的键执行 get 或 put 操作，使用计数器的值将会递增。
  * 函数 get 和 put 必须以 O(1) 的平均时间复杂度运行。
- * */
-
+ */
 class LFUCache {
     int capacity;
     struct Node{
@@ -274,5 +273,74 @@ public:
         unordered_map<User_Id, User *>::iterator usr_iter = users.find(followerId);
         if (users.end() != usr_iter)
             usr_iter->second->dislike(followeeId);
+    }
+};
+// 1206. 设计跳表 https://leetcode.cn/problems/design-skiplist/
+// 不使用任何库函数，设计一个 跳表 。跳表 是在 O(log(n)) 时间内完成增加、删除、搜索操作的数据结构。跳表相比于树堆与红黑树，其功能与性能相当，并且跳表的代码长度相较下更短，其设计思想与链表相似。跳表中有很多层，每一层是一个短的链表。在第一层的作用下，增加、删除和搜索操作的时间复杂度不超过 O(n)。跳表的每一个操作的平均时间复杂度是 O(log(n))，空间复杂度是 O(n)。在本题中，你的设计应该要包含这些函数：bool search(int target) : 返回target是否存在于跳表中。void add(int num): 插入一个元素到跳表。bool erase(int num): 在跳表中删除一个值，如果 num 不存在，直接返回false. 如果存在多个 num ，删除其中任意一个即可。注意，跳表中可能存在多个相同的值，你的代码需要处理这种情况。
+class Skiplist {
+    #define MAX_SKIPLIST_LEVEL 32
+    static const int S = 0xFFFF;
+    static const int SP = 0x3FFF;
+    struct Node{
+        int val;
+        Node* next[MAX_SKIPLIST_LEVEL];
+        Node(){memset(next,0,sizeof(next));}
+        Node(int val):val(val){memset(next,0,sizeof(next));}
+    };
+    Node* head;
+    int level;
+    static int randomLevel(){
+        for(int i=1;i<MAX_SKIPLIST_LEVEL;++i){
+            if((rand()&S)>SP)
+                return i;
+        }
+        return MAX_SKIPLIST_LEVEL;
+    }
+public:
+    Skiplist() {
+        head = new Node();
+        level = 0;
+        srand(time(NULL));
+    }
+    bool search(int target) {
+        Node* p = head;
+        for(int i=level-1;i>=0;--i)
+            while(p->next[i]&&p->next[i]->val<target)
+                p = p->next[i];
+        p = p->next[0];
+        if(p&&p->val==target)
+            return true;
+        return false;
+    }
+    void add(int num) {
+        vector<Node*> update(MAX_SKIPLIST_LEVEL, head);
+        Node *curr = head;
+        int lv = randomLevel();
+        level = max(level, lv);
+        Node *node = new Node(num);
+        for (int i =level-1;i>=0;i--) {
+            while (curr->next[i] && curr->next[i]->val < num)
+                curr = curr->next[i];
+            node->next[i] = curr->next[i];
+            curr->next[i] = node;
+        }
+    }
+    bool erase(int num) {
+        vector<Node*> update(MAX_SKIPLIST_LEVEL,NULL);
+        Node *cur = head,*node = NULL;
+        for (int i=level-1; i>=0;i--) {
+            while (cur->next[i] && cur->next[i]->val < num) 
+                cur = cur->next[i];
+            if(cur->next[i]&&cur->next[i]->val==num){
+                node = cur->next[i];
+                cur->next[i] = node->next[i];
+            }
+        }
+        if(!node)
+            return false;
+        delete node;
+        while (level>1&&!(head->next[level-1]))
+            level--;
+        return true;
     }
 };

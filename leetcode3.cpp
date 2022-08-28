@@ -1,23 +1,5 @@
 #include <bits/stdc++.h>
 using namespace std;
-// 719. 找出第 K 小的数对距离 https://leetcode.cn/problems/find-k-th-smallest-pair-distance/
-// 数对 (a,b) 由整数 a 和 b 组成，其数对距离定义为 a 和 b 的绝对差值。给你一个整数数组 nums 和一个整数 k ，数对由 nums[i] 和 nums[j] 组成且满足 0 <= i < j < nums.length 。返回 所有数对距离中 第 k 小的数对距离。
-int smallestDistancePair(vector<int>& nums, int k) {
-	sort(nums.begin(),nums.end());
-	int l = 0, r = nums.back() - nums.front();
-	auto begin = nums.begin(),end = nums.end();
-	while(l<r){
-		int mid = (l+r)/2;
-		int cnt = 0;
-		for(auto i=begin;i!=end;++i)
-			cnt += upper_bound(i+1,end,*i+mid) - i-1;
-		if(cnt>=k)
-			r = mid;
-		else
-			l = mid+1;
-	}
-	return l;
-}
 // 352. 将数据流变为多个不相交区间 https://leetcode.cn/problems/data-stream-as-disjoint-intervals/
 // 给你一个由非负整数 a1, a2, ..., an 组成的数据流输入，请你将到目前为止看到的数字总结为不相交的区间列表。实现 SummaryRanges 类：SummaryRanges() 使用一个空数据流初始化对象。void addNum(int val) 向数据流中加入整数 val 。int[][] getIntervals() 以不相交区间 [starti, endi] 的列表形式返回对数据流中整数的总结。
 class SummaryRanges {
@@ -1012,5 +994,23 @@ int validSubarraySize(vector<int> &nums, int threshold) {
         if (nums[i] > threshold / k) 
             return k;
     }
+    return -1;
+}
+// 2344. 使数组可以被整除的最少删除次数 https://leetcode.cn/problems/minimum-deletions-to-make-array-divisible/
+// 给你两个正整数数组 nums 和 numsDivide 。你可以从 nums 中删除任意数目的元素。请你返回使 nums 中 最小 元素可以整除 numsDivide 中所有元素的 最少 删除次数。如果无法得到这样的元素，返回 -1 。如果 y % x == 0 ，那么我们说整数 x 整除 y 。
+int gcd(int a,int b){
+    if(a<b) return gcd(a,b);
+    if(b==0) return a;
+    return gcd(b,a%b);
+}
+int minOperations(vector<int>& nums, vector<int>& numsDivide) {
+    int g  = 0;
+    for(auto& d:numsDivide)
+        g = gcd(g,d);
+    sort(nums.begin(),nums.end());
+    int size = nums.size();
+    for(int i=0;i<size;++i)
+        if(g%nums[i]==0)
+            return i;
     return -1;
 }

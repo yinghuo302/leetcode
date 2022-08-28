@@ -1,7 +1,7 @@
 /*
  * @Author: zanilia
  * @Date: 2021-12-04 14:03:29
- * @LastEditTime: 2022-07-22 15:20:21
+ * @LastEditTime: 2022-07-26 10:24:03
  * @Descripttion: 
  */
 #include <bits/stdc++.h>
@@ -350,37 +350,6 @@ int scheduleCourse(vector<vector<int>>& courses) {
     }
     return hp.size();
 }
-// 875. 爱吃香蕉的珂珂 https://leetcode.cn/problems/koko-eating-bananas/
-// 珂珂喜欢吃香蕉。这里有 n 堆香蕉，第 i 堆中有 piles[i] 根香蕉。警卫已经离开了，将在 h 小时后回来。珂珂可以决定她吃香蕉的速度 k （单位：根/小时）。每个小时，她将会选择一堆香蕉，从中吃掉 k 根。如果这堆香蕉少于 k 根，她将吃掉这堆的所有香蕉，然后这一小时内不会再吃更多的香蕉。  珂珂喜欢慢慢吃，但仍然想在警卫回来前吃掉所有的香蕉。返回她可以在 h 小时内吃掉所有香蕉的最小速度 k（k 为整数）。
-int minEatingSpeed(vector<int>& piles, int h) {
-    int sum = 0, m = INT32_MIN;
-    for(auto &pile:piles){
-        if(pile>m)
-            m = pile;
-        sum += pile;
-    }
-    auto check = [&](int k){
-        int tem = h;
-        for(auto& pile:piles){
-            tem -= (pile+k-1)/k;
-            if(tem<0)
-                return false;
-        }
-        return true;
-    };
-    
-    int l = sum / h, r = m;
-    if(l==0) 
-        l = 1;
-    while(l<r){
-        int mid = l + (r-l)/2;
-        if(check(mid))
-            r = mid;
-        else
-            l = mid+1;
-    }
-    return l;
-}
 // 587. 安装栅栏 https://leetcode.cn/problems/erect-the-fence/
 // 在一个二维的花园中，有一些用 (x, y) 坐标表示的树。由于安装费用十分昂贵，你的任务是先用最短的绳子围起所有的树。只有当所有的树都被绳子包围时，花园才能围好栅栏。你需要找到正好位于栅栏边界上的树的坐标。
 vector<vector<int>> outerTrees(vector<vector<int>>& trees) {
@@ -526,33 +495,6 @@ bool matchReplacement(string s, string sub, vector<vector<char>>& mappings) {
             return true;
     }
     return false;
-}
-// 6098. 统计得分小于 K 的子数组数目 https://leetcode.cn/problems/count-subarrays-with-score-less-than-k/
-// 一个数字的 分数 定义为数组之和 乘以 数组的长度。比方说，[1, 2, 3, 4, 5] 的分数为 (1 + 2 + 3 + 4 + 5) * 5 = 75 。给你一个正整数数组 nums 和一个整数 k ，请你返回 nums 中分数 严格小于 k 的 非空整数子数组数目。子数组 是数组中的一个连续元素序列
-long long countSubarrays(vector<int>& nums, long long k) {
-    int size = nums.size();
-    long long presum[size+1];
-    long long ans = 0;
-    for(int i=0;i<size;++i)
-        presum[i+1] = presum[i] + nums[i];
-    auto bisearch = [&](int i){
-        int l = i,r = size;
-        long long tem = presum[r] - presum[i];
-        if(tem<k)
-            return size+1;
-        while(l<r){
-            int mid = (l+r)/2;
-            long long tem = presum[mid] - presum[i];
-            if(tem>=k)
-                r = mid;
-            else
-                l = mid+1;
-        }
-        return l;
-    };
-    for(int i=0;i<size;++i)
-        ans += bisearch(i)-i;
-    return ans;
 }
 // 5259. 计算应缴税款总额 https://leetcode.cn/problems/calculate-amount-paid-in-taxes/
 // 给你一个下标从 0 开始的二维整数数组 brackets ，其中 brackets[i] = [upperi, percenti] ，表示第 i 个税级的上限是 upperi ，征收的税率为 percenti 。税级按上限 从低到高排序（在满足 0 < i < brackets.length 的前提下，upperi-1 < upperi）。税款计算方式如下：不超过 upper0 的收入按税率 percent0 缴纳接着 upper1 - upper0 的部分按税率 percent1 缴纳然后 upper2 - upper1 的部分按税率 percent2 缴纳以此类推给你一个整数 income 表示你的总收入。返回你需要缴纳的税款总额。与标准答案误差不超 10-5 的结果将被视作正确答案
@@ -968,23 +910,6 @@ vector<int> smallestMissingValueSubtree(vector<int>& parents, vector<int>& nums)
 		one_index = parents[one_index];
 	}
 	return ans;
-}
-// 668. 乘法表中第k小的数 https://leetcode.cn/problems/kth-smallest-number-in-multiplication-table/
-// 几乎每一个人都用 乘法表。但是你能在乘法表中快速找到第k小的数字吗？给定高度m 、宽度n 的一张 m * n的乘法表，以及正整数k，你需要返回表中第k 小的数字。
-int findKthNumber(int m, int n, int k) {
-	int l = 1,r = m*n;
-	while(l<r){
-		int mid = (r-l)/2+l;
-		int row = mid / n;
-		int cnt = row*n;
-		for(int i=row+1;i<=m;++i)
-			cnt += mid / i;
-		if(cnt>=k)
-			r = mid;
-		else
-			l = mid +1;
-	}
-	return l;
 }
 // 710. 黑名单中的随机数 https://leetcode.cn/problems/random-pick-with-blacklist/
 // 给定一个整数 n 和一个 无重复 黑名单整数数组 blacklist 。设计一种算法，从 [0, n - 1] 范围内的任意整数中选取一个 未加入 黑名单 blacklist 的整数。任何在上述范围内且不在黑名单 blacklist 中的整数都应该有 同等的可能性 被返回。优化你的算法，使它最小化调用语言 内置 随机函数的次数。实现 Solution 类:Solution(int n, int[] blacklist) 初始化整数 n 和被加入黑名单 blacklist 的整数int pick() 返回一个范围为 [0, n - 1] 且不在黑名单 blacklist 中的随机整数
