@@ -1,7 +1,7 @@
 /*
  * @Author: zanilia
  * @Date: 2022-02-17 16:17:01
- * @LastEditTime: 2022-02-17 21:56:15
+ * @LastEditTime: 2022-10-01 23:39:30
  * @Descripttion: 
  */
 #include <bits/stdc++.h>
@@ -56,7 +56,7 @@ class BIT{
     }
 public:
     BIT(unsigned _size):arr(new int[_size+1]),size(_size){
-		memset(arr,0,(_size+1)*4);
+		memset(arr,0,(_size+1)*sizeof(int));
 	}
     void update(int pos,int inc){
         while(pos<=size){

@@ -1,7 +1,7 @@
 /*
  * @Author: zanilia
  * @Date: 2022-07-29 09:59:28
- * @LastEditTime: 2022-09-11 17:25:47
+ * @LastEditTime: 2022-10-02 13:50:21
  * @Descripttion:
  */
 package leetcode1
@@ -597,11 +597,11 @@ func nthUglyNumber(n int, a int, b int, c int) int {
 	})
 }
 
-func gcd(x int, y int) int {
-	if x == 0 {
-		return y
+func gcd(a, b int) int {
+	for a != 0 {
+		a, b = b%a, a
 	}
-	return gcd(y%x, x)
+	return b
 }
 
 // 911. 在线选举 https://leetcode.cn/problems/online-election/
