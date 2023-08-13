@@ -1,9 +1,3 @@
-/*
- * @Author: zanilia
- * @Date: 2022-07-29 09:59:28
- * @LastEditTime: 2022-10-02 13:50:21
- * @Descripttion:
- */
 package leetcode1
 
 import (

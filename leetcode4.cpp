@@ -410,16 +410,7 @@ vector<vector<int>> buildMatrix(int k, vector<vector<int>>& rowConditions, vecto
         matrix[top_row[i]][top_col[i]] = i;
     return matrix;
 }
-// 241. 为运算表达式设计优先级 https://leetcode.cn/problems/different-ways-to-add-parentheses/
-// 给你一个由数字和运算符组成的字符串 expression ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 按任意顺序 返回答案。生成的测试用例满足其对应输出值符合 32 位整数范围，不同结果的数量不超过 104 。
-vector<int> diffWaysToCompute(string expression) {
-    
-}
-// 324. 摆动排序 II https://leetcode.cn/problems/wiggle-sort-ii/
-// 给你一个整数数组 nums，将它重新排列成 nums[0] < nums[1] > nums[2] < nums[3]... 的顺序。你可以假设所有输入数组都可以得到满足题目要求的结果。
-void wiggleSort(vector<int>& nums) {
-     
-}
+
 struct VecHash{
     size_t operator()(const vector<int>& nums){
         size_t ret = 0;
@@ -506,80 +497,6 @@ int transportationHub(vector<vector<int>>& path) {
     }
     return -1;
 }
-
-vector<string> *p;
-int num = 0;
-int m;
-int n;
-const int dirs[4][2] = {{1,0},{0,1},{-1,0},{0,-1}};
-const int clockwise[4] = {3,0,1,2};
-const int anticlockwise[4] = {1,2,3,0};
-bool canArrive(int i,int j,int dir){
-    auto& plate = *p;
-    while(true){
-        if(i<0||i>=m||j<0||j<=n)
-            return false;
-        if(plate[i][j]=='O')
-            return true;
-        else if(plate[i][j]=='W')
-            dir = anticlockwise[dir];
-        else if (plate[i][j]=='E')
-            dir = clockwise[dir];
-        i += dirs[dir][0]; j += dirs[dir][1];
-    }
-}
-vector<vector<int>> ballGame(int num, vector<string>& plate) {
-    int m = plate.size(), n = plate[0].size();
-    vector<vector<int>> ans;
-    for(int i=1;i<m-1;++i){
-        if(canArrive(i,0,1))
-            ans.push_back({i,0});
-        if(n!=1&&canArrive(i,n-1,3))
-            ans.push_back({i,n-1});
-    }
-    for(int i=1;i<n-1;++i){
-        if(canArrive(0,i,0))
-            ans.push_back({0,i});
-        if(m!=1&&canArrive(m-1,i,2))
-            ans.push_back({m-1,i});
-    }
-    return ans;
-}
-
-struct TreeNode{
-    int val;
-    TreeNode* left;
-    TreeNode* right;
-    TreeNode(int val):val(val){}
-};
-class CloseLampInTree{
-    static constexpr int INF = 1e9;
-    unordered_map<long long,int> mp;
-    int dfs(long long node){
-        TreeNode* root =(TreeNode*)(node&(~3));
-        if(!root)
-            return 0;
-        if(mp.count(node))
-            return mp[node];
-        bool turn = node&1,need_state = node&2;
-        int cur_state = root->val;
-        int ans = INF;
-        for(int i=0;i<8;i++){
-            int flag = 0;
-            bool op1 = i&1,op2 = i&2,op3 = i&3; //op1改当前，op2改子树所有，op3改当前及子孙
-            if(op2) need_state = !need_state;
-            if(turn^op3^op1) cur_state ^= 1; 
-            if(root->val!=need_state) continue;
-            if(op3) flag |= 2;
-            ans = min(ans,op1+op2+op3+dfs((long long)(root->left)|flag|need_state)+dfs((long long)(root->right)|flag|need_state));
-        }
-        return ans;
-    }
-public:
-    int closeLampInTree(TreeNode* root) {
-        return dfs((long long)root);
-    }
-};
 // 6189. 按位与最大的最长子数组 https://leetcode.cn/problems/longest-subarray-with-maximum-bitwise-and/
 // 给你一个长度为 n 的整数数组 nums 。考虑 nums 中进行 按位与（bitwise AND）运算得到的值 最大 的 非空 子数组。换句话说，令 k 是 nums 任意 子数组执行按位与运算所能得到的最大值。那么，只需要考虑那些执行一次按位与运算后等于 k 的子数组。返回满足要求的 最长 子数组的长度。数组的按位与就是对数组中的所有数字进行按位与运算。子数组 是数组中的一个连续元素序列。
 int longestSubarray(vector<int>& nums) {
@@ -797,4 +714,303 @@ int mostProfitablePath(vector<vector<int>>& edges, int bob, vector<int>& amount)
     };
     dfs(0,-1);
     return ans;
+}
+// 38. 外观数列 https://leetcode.cn/problems/count-and-say/
+// 给定一个正整数 n ，输出外观数列的第 n 项。「外观数列」是一个整数序列，从数字 1 开始，序列中的每一项都是对前一项的描述。你可以将其视作是由递归公式定义的数字字符串序列：countAndSay(1) = "1"，countAndSay(n) 是对 countAndSay(n-1) 的描述，然后转换成另一个数字字符串。要 描述 一个数字字符串，首先要将字符串分割为 最小 数量的组，每个组都由连续的最多 相同字符 组成。然后对于每个组，先描述字符的数量，然后描述字符，形成一个描述组。要将描述转换为数字字符串，先将每组中的字符数量用数字替换，再将所有描述组连接起来。
+string countAndSay(int n) {
+	if(n==1) return "1";
+	string prev = countAndSay(n-1);
+	string ans = "";
+	char last=prev[0]; int cnt = 0;
+	for(auto ch: prev){
+		if(ch!=last){
+			ans.append( to_string(cnt)).push_back(last);
+			last = ch; cnt = 1;
+		}
+		else
+			cnt++;
+	}
+	if(cnt!=0)
+		ans.append( to_string(cnt)).push_back(last);
+	return ans;
+}
+// 39. 组合总和 https://leetcode.cn/problems/combination-sum/
+// 给你一个 无重复元素 的整数数组 candidates 和一个目标整数 target ，找出 candidates 中可以使数字和为目标数 target 的 所有 不同组合 ，并以列表形式返回。你可以按 任意顺序 返回这些组合。candidates 中的 同一个 数字可以 无限制重复被选取 。如果至少一个数字的被选数量不同，则两种组合是不同的。 对于给定的输入，保证和为 target 的不同组合数少于 150 个。
+vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+	vector<vector<int>> ans; ans.reserve(150);
+	vector<int> tem; tem.reserve(20);  
+	function<void(int,int)> dfs;
+	dfs = [&](int val,int idx){
+		if(val==0) candidates.emplace_back(tem);
+		if(idx==candidates.size()||val<=0) return ;
+		dfs(val,idx+1);
+		if(val-candidates[idx]>=0){
+			tem.emplace_back(candidates[idx]);
+			dfs(val-candidates[idx],idx);
+			tem.pop_back();
+		}
+	};
+	dfs(target,0);
+	return ans;
+}
+// 931. 下降路径最小和 https://leetcode.cn/problems/minimum-falling-path-sum/
+// 给你一个 n x n 的 方形 整数数组 matrix ，请你找出并返回通过 matrix 的下降路径 的 最小和 。下降路径 可以从第一行中的任何元素开始，并从每一行中选择一个元素。在下一行选择的元素和当前行所选元素最多相隔一列（即位于正下方或者沿对角线向左或者向右的第一个元素）。具体来说，位置 (row, col) 的下一个元素应当是 (row + 1, col - 1)、(row + 1, col) 或者 (row + 1, col + 1) 。
+int minFallingPathSum(vector<vector<int>>& matrix) {
+	int n = matrix.size();
+	vector<vector<int>> dp = vector<vector<int>>(2,vector<int>(n));
+	int curr,prev;
+	for(int i=0;i<n;i++){
+		curr = (i&1), prev = curr ^ 1;
+		for(int j=0;j<n;j++){
+			int val = dp[prev][j];
+			if(j>0&&dp[prev][j-1]<val)
+				val = dp[prev][j-1];
+			if(j+1<n&&dp[prev][j+1]<val)
+				val = dp[prev][j+1];
+			dp[curr][j] = val + matrix[i][j];
+		}
+	}
+	int res = dp[curr][0];
+	for(int i=0;i<n;i++)
+		if(dp[curr][i] < res)
+			res = dp[curr][i];
+	return res;
+}
+// 6929. 数组的最大美丽值 https://leetcode.cn/problems/maximum-beauty-of-an-array-after-applying-operation/
+// 给你一个下标从 0 开始的整数数组 nums 和一个 非负 整数 k 。在一步操作中，你可以执行下述指令：在范围 [0, nums.length - 1] 中选择一个 此前没有选过 的下标 i 。将 nums[i] 替换为范围 [nums[i] - k, nums[i] + k] 内的任一整数。数组的 美丽值 定义为数组中由相等元素组成的最长子序列的长度。对数组 nums 执行上述操作任意次后，返回数组可能取得的 最大 美丽值。注意：你 只 能对每个下标执行 一次 此操作。数组的 子序列 定义是：经由原数组删除一些元素（也可能不删除）得到的一个新数组，且在此过程中剩余元素的顺序不发生改变。
+int maximumBeauty(vector<int>& nums, int k) {
+	const int offset = 100000;
+	int diff[300002] = {0};
+	for(auto num: nums){
+		diff[num-k]++;
+		diff[num+k+1]++;
+	} 
+	int tmp = 0, ans = 0;
+	for(int i=0;i<300002;i++){
+		tmp += diff[i];
+		if(tmp>ans) ans = tmp;
+	}
+	return ans;
+}
+// 6927. 合法分割的最小下标 https://leetcode.cn/problems/minimum-index-of-a-valid-split/
+// 如果元素 x 在长度为 m 的整数数组 arr 中满足 freq(x) * 2 > m ，那么我们称 x 是 支配元素 。其中 freq(x) 是 x 在数组 arr 中出现的次数。注意，根据这个定义，数组 arr 最多 只会有 一个 支配元素. 给你一个下标从 0 开始长度为 n 的整数数组 nums ，数据保证它含有一个支配元素。你需要在下标 i 处将 nums 分割成两个数组 nums[0, ..., i] 和 nums[i + 1, ..., n - 1] ，如果一个分割满足以下条件，我们称它是 合法 的：0 <= i < n - 1. nums[0, ..., i] 和 nums[i + 1, ..., n - 1] 的支配元素相同。这里， nums[i, ..., j] 表示 nums 的一个子数组，它开始于下标 i ，结束于下标 j ，两个端点都包含在子数组内。特别地，如果 j < i ，那么 nums[i, ..., j] 表示一个空数组。请你返回一个 合法分割 的 最小 下标。如果合法分割不存在，返回 -1 。
+int minimumIndex(vector<int>& nums) {
+	int size = nums.size();
+	int prime[size],prime_rev[size];
+	unordered_map<int,int> cnt;
+	int max_num = nums[0];
+	for(int i=0;i<size;i++){
+		cnt[nums[i]]++;
+		if(cnt[nums[i]] >cnt[max_num]) max_num = nums[i];
+		prime[i] = cnt[max_num]*2 >(i+1) ? max_num :-1;
+	}
+	cnt.clear();
+	for(int i=size-1;i>=0;i--){
+		cnt[nums[i]]++;
+		if(cnt[nums[i]] >cnt[max_num]) max_num = nums[i];
+		prime_rev[i] = cnt[max_num]*2>(size-i)? max_num :-1;
+	}
+	for(int i=0;i<size-1;i++)
+		if(prime[i]!=-1&&prime[i]==prime_rev[i+1])
+			return i;
+	return -1;
+}
+// 834. 树中距离之和 https://leetcode.cn/problems/sum-of-distances-in-tree/
+// 给定一个无向、连通的树。树中有 n 个标记为 0...n-1 的节点以及 n-1 条边 。给定整数 n 和数组 edges ， edges[i] = [ai, bi]表示树中的节点 ai 和 bi 之间有一条边。返回长度为 n 的数组 answer ，其中 answer[i] 是树中第 i 个节点与所有其他节点之间的距离之和。
+vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+	vector<int> ans(n,0);
+	vector<int> sz(n, 1);
+	vector<vector<int>> graph(n, vector<int>());
+	for (auto& edge: edges) {
+		int u = edge[0], v = edge[1];
+		graph[u].emplace_back(v);
+		graph[v].emplace_back(u);
+	}
+	function<void(int,int)>  dfs;
+	dfs  = [&](int node,int pa){
+		for(auto next :graph[node]){
+			if(next==pa) continue;
+			dfs(next,node);
+			sz[node] += sz[next];
+			ans[node] += ans[next] + sz[next];
+		}
+	};
+	function<void(int,int)> reroot;
+	reroot = [&](int node,int pa){
+		for(auto next :graph[node]){
+			if(next==pa) continue;
+			ans[next] = ans[node] + n -2 * sz[next];
+			reroot(next,node);
+		}
+	};
+	dfs(0, -1);
+	reroot(0, -1);
+	return ans;
+}   
+// 1499. 满足不等式的最大值 https://leetcode.cn/problems/max-value-of-equation/
+// 给你一个数组 points 和一个整数 k 。数组中每个元素都表示二维平面上的点的坐标，并按照横坐标 x 的值从小到大排序。也就是说 points[i] = [xi, yi] ，并且在 1 <= i < j <= points.length 的前提下， xi < xj 总成立。请你找出 yi + yj + |xi - xj| 的 最大值，其中 |xi - xj| <= k 且 1 <= i < j <= points.length。题目测试数据保证至少存在一对能够满足 |xi - xj| <= k 的点。
+int findMaxValueOfEquation(vector<vector<int>>& points, int k) {
+	int n = points.size();
+	int begin = 0, end = 0;
+	pair<int,int> q[n];
+	int ans = INT32_MIN;
+	for(auto &point: points){
+		while(begin<end&&point[0] - q[begin].first>k) begin++;
+		if(begin<end) ans = max(ans,point[0] + q[begin].second + point[1]);
+		while(begin<end&&point[1]-point[0]>q[end-1].second) end--;
+		q[end++] = pair(point[0],point[1]-point[0]);
+	}
+	return ans;
+}
+// 860. 柠檬水找零 https://leetcode.cn/problems/lemonade-change/
+// 在柠檬水摊上，每一杯柠檬水的售价为 5 美元。顾客排队购买你的产品，（按账单 bills 支付的顺序）一次购买一杯。每位顾客只买一杯柠檬水，然后向你付 5 美元、10 美元或 20 美元。你必须给每个顾客正确找零，也就是说净交易是每位顾客向你支付 5 美元。注意，一开始你手头没有任何零钱。给你一个整数数组 bills ，其中 bills[i] 是第 i 位顾客付的账。如果你能给每位顾客正确找零，返回 true ，否则返回 false 。
+bool lemonadeChange(vector<int>& bills) {
+	int cnt_five = 0,cnt_ten = 0;
+	for(auto bill: bills){
+		if(bill==5) cnt_five++;
+		else if(bill==10){
+			if(cnt_five==0) return false;
+			cnt_five--;
+			cnt_ten++;
+		}else{
+			if(cnt_ten!=0){
+				cnt_ten--;
+				if(cnt_five==0) return false;
+				cnt_five--;
+			}else if(cnt_five>=3){
+				cnt_five -= 3;
+			}else{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+// 31. 下一个排列 https://leetcode.cn/problems/next-permutation/
+// 整数数组的一个 排列  就是将其所有成员以序列或线性顺序排列。例如，arr = [1,2,3] ，以下这些都可以视作 arr 的排列：[1,2,3]、[1,3,2]、[3,1,2]、[2,3,1] 。整数数组的 下一个排列 是指其整数的下一个字典序更大的排列。更正式地，如果数组的所有排列根据其字典顺序从小到大排列在一个容器中，那么数组的 下一个排列 就是在这个有序容器中排在它后面的那个排列。如果不存在下一个更大的排列，那么这个数组必须重排为字典序最小的排列（即，其元素按升序排列）。例如，arr = [1,2,3] 的下一个排列是 [1,3,2] 。类似地，arr = [2,3,1] 的下一个排列是 [3,1,2] 。而 arr = [3,2,1] 的下一个排列是 [1,2,3] ，因为 [3,2,1] 不存在一个字典序更大的排列。给你一个整数数组 nums ，找出 nums 的下一个排列。必须 原地 修改，只允许使用额外常数空间。
+void nextPermutation(vector<int>& nums) {
+	int size = nums.size(),k=-1,l;
+	auto reverse = [](vector<int>& nums,int i,int j){
+		while(i<j){
+			int tem = nums[i];
+			nums[i++] = nums[j];
+			nums[j--] = tem;
+		}
+	};
+	for(int i=size-2;i>=0;i--)
+		if(nums[i]<nums[i+1]){
+			k = i;
+			break;
+		}
+	if(k==-1) return reverse(nums,0,size-1);
+	for(int i=size-1;i>=0;i--)
+		if(nums[k]<nums[i]){
+			l = i;
+			break;
+		}
+	swap(nums[k],nums[l]);
+	return reverse(nums,k+1,size-1);
+}
+// 2787. 将一个数字表示成幂的和的方案数 https://leetcode.cn/problems/ways-to-express-an-integer-as-sum-of-powers/
+// 给你两个 正 整数 n 和 x 。请你返回将 n 表示成一些 互不相同 正整数的 x 次幂之和的方案数。换句话说，你需要返回互不相同整数 [n1, n2, ..., nk] 的集合数目，满足 n = n1x + n2x + ... + nkx 。由于答案可能非常大，请你将它对 109 + 7 取余后返回。比方说，n = 160 且 x = 3 ，一个表示 n 的方法是 n = 23 + 33 + 53 。
+int numberOfWays(int n, int x) {
+	function<int(int,int)> solve; 
+	unordered_map<int,int> mp;
+	solve = [&](int sum,int num){
+		if(num==0) return (sum==0)? 1 : 0;
+		int tem = (sum << 16) + num;
+		if(mp.count(tem)) return mp[tem];
+		int ans = solve(sum,num-1);
+		if(sum-pow(num,x)>0) 
+			ans += solve(sum-pow(num,x),num-1);
+		mp[tem] = ans;
+		return ans;
+	};
+	return solve(n,pow(n,1.0/x) + 2);
+}
+// 2788. 按分隔符拆分字符串 https://leetcode.cn/problems/split-strings-by-separator/description/
+// 给你一个字符串数组 words 和一个字符 separator ，请你按 separator 拆分 words 中的每个字符串。返回一个由拆分后的新字符串组成的字符串数组，不包括空字符串 。注意separator 用于决定拆分发生的位置，但它不包含在结果字符串中。拆分可能形成两个以上的字符串。结果字符串必须保持初始相同的先后顺序。
+vector<string> splitWordsBySeparator(vector<string>& words, char separator) {
+	vector<string> ans; string tem;
+	for(auto &word: words){
+		stringstream ss(word);
+		while(getline(ss,tem,separator)){
+			if(!tem.empty()) 
+				ans.emplace_back(tem);
+		}
+	}
+	return ans;
+}
+// 2789. 合并后数组中的最大元素 https://leetcode.cn/problems/largest-element-in-an-array-after-merge-operations/description/
+// 给你一个下标从 0 开始、由正整数组成的数组 nums 。你可以在数组上执行下述操作 任意 次：选中一个同时满足 0 <= i < nums.length - 1 和 nums[i] <= nums[i + 1] 的整数 i 。将元素 nums[i + 1] 替换为 nums[i] + nums[i + 1] ，并从数组中删除元素 nums[i] 。返回你可以从最终数组中获得的 最大 元素的值。
+long long maxArrayValue(vector<int>& nums) {
+	int size = nums.size();
+    long long dp[size];
+	dp[size-1] = nums[size-1];
+	long long ans = nums[size-1];
+	for(int i=size-2;i>=0;i--){
+		dp[i] = nums[i];
+		if(nums[i] <= nums[i+1] || nums[i] <= dp[i+1]) 
+			dp[i] += max((long long)nums[i+1],dp[i+1]);
+		ans = max(ans,dp[i]);
+	}
+	return ans;
+}
+// 2785. 将字符串中的元音字母排序 https://leetcode.cn/problems/sort-vowels-in-a-string/
+// 给你一个下标从 0 开始的字符串 s ，将 s 中的元素重新 排列 得到新的字符串 t ，它满足：所有辅音字母都在原来的位置上。更正式的，如果满足 0 <= i < s.length 的下标 i 处的 s[i] 是个辅音字母，那么 t[i] = s[i] 。元音字母都必须以他们的 ASCII 值按 非递减 顺序排列。更正式的，对于满足 0 <= i < j < s.length 的下标 i 和 j  ，如果 s[i] 和 s[j] 都是元音字母，那么 t[i] 的 ASCII 值不能大于 t[j] 的 ASCII 值。请你返回结果字母串。元音字母为 'a' ，'e' ，'i' ，'o' 和 'u' ，它们可能是小写字母也可能是大写字母，辅音字母是除了这 5 个字母以外的所有字母。
+string sortVowels(string s) {
+	string vowels = "AEIOUaeiou";
+	int cnt[10] = {0};
+	int size = s.size();
+	vector<int> idxs;
+	idxs.reserve(size);
+	for(int i =0;i<size;i++){
+		auto pos = vowels.find(s[i]);
+		if(pos!=vowels.npos){
+			idxs.emplace_back(i);
+			cnt[pos]++;
+		}
+	}
+	int j = 0;
+	for(auto &idx:idxs){
+		while(cnt[j]==0) j++;
+		s[idx] = vowels[j];
+	}  
+	return s;
+}
+// 2786. 访问数组中的位置使分数最大 https://leetcode.cn/problems/visit-array-positions-to-maximize-score/description/
+// 给你一个下标从 0 开始的整数数组 nums 和一个正整数 x 。你 一开始 在数组的位置 0 处，你可以按照下述规则访问数组中的其他位置：如果你当前在位置 i ，那么你可以移动到满足 i < j 的 任意 位置 j 。对于你访问的位置 i ，你可以获得分数 nums[i] 。如果你从位置 i 移动到位置 j 且 nums[i] 和 nums[j] 的 奇偶性 不同，那么你将失去分数 x 。请你返回你能得到的 最大 得分之和。注意 ，你一开始的分数为 nums[0] 。
+long long maxScore(vector<int>& nums, int x) {
+	int size = nums.size();
+	long long dp[size]; dp[0] = nums[0];
+	long long ans = nums[0];
+	long long prev[2] = {0};
+	bool flag = nums[0] & 1;
+	prev[flag] = nums[0]; 
+	prev[!flag] = nums[0] -x;
+	for(int i=1;i<size;i++){
+		bool flag = nums[i] & 1;
+		dp[i] = max(prev[flag],prev[!flag]-x) + nums[i];
+		prev[flag] = max(prev[flag],dp[i]);
+		ans = max(ans,dp[i]);
+	}
+	return ans;
+}
+// 2784. 检查数组是否是好的 https://leetcode.cn/problems/check-if-array-is-good/
+// 给你一个整数数组 nums ，如果它是数组 base[n] 的一个排列，我们称它是个 好 数组。base[n] = [1, 2, ..., n - 1, n, n] （换句话说，它是一个长度为 n + 1 且包含 1 到 n - 1 恰好各一次，包含 n  两次的一个数组）。比方说，base[1] = [1, 1] ，base[3] = [1, 2, 3, 3] 。如果数组是一个好数组，请你返回 true ，否则返回 false 。注意：数组的排列是这些数字按任意顺序排布后重新得到的数组。
+bool isGood(vector<int>& nums) {
+	int size = nums.size();
+	int cnt[size];
+	for(int i=0;i<size;i++)
+		cnt[i] = 0;
+	for(int i=0;i<size;i++){
+		if(nums[i]<size) 
+			cnt[nums[i]] += 1;
+		else 
+			return false;
+	}
+	for(int i=1;i<size-1;i++)
+		if(cnt[i]!=1)
+			return false;
+	return cnt[size-1]==2;
 }

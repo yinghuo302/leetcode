@@ -1,9 +1,3 @@
-/*
- * @Author: zanilia
- * @Date: 2022-09-11 10:17:57
- * @LastEditTime: 2022-10-16 16:01:52
- * @Descripttion:
- */
 package leetcode2
 
 import (
@@ -819,16 +813,22 @@ func hardestWorker(n int, logs [][]int) int {
 	return max_id
 }
 
-// 6201. 找出前缀异或的原始数组 https://leetcode.cn/problems/find-the-original-array-of-prefix-xor/
-// 给你一个长度为 n 的 整数 数组 pref 。找出并返回满足下述条件且长度为 n 的数组 arr ：pref[i] = arr[0] ^ arr[1] ^ ... ^ arr[i].注意 ^ 表示 按位异或（bitwise-xor）运算。可以证明答案是 唯一 的。
-func findArray(pref []int) []int {
-	size := len(pref)
-	ans := make([]int, size)
-	ans[0] = pref[0]
-	for i := 1; i < size; i++ {
-		ans[i] = pref[i] ^ pref[i-1]
+// 88. 合并两个有序数组 https://leetcode.cn/problems/merge-sorted-array/description/
+// 给你两个按 非递减顺序 排列的整数数组 nums1 和 nums2，另有两个整数 m 和 n ，分别表示 nums1 和 nums2 中的元素数目。请你 合并 nums2 到 nums1 中，使合并后的数组同样按 非递减顺序 排列。注意：最终，合并后数组不应由函数返回，而是存储在数组 nums1 中。为了应对这种情况，nums1 的初始长度为 m + n，其中前 m 个元素表示应合并的元素，后 n 个元素为 0 ，应忽略。nums2 的长度为 n 。
+func merge(nums1 []int, m int, nums2 []int, n int) {
+	p1, p2 := m-1, n-1
+	tail := m + n - 1
+	for tail >= 0 {
+		flag := p1 == -1 || (p2 != -1 && nums1[p1] < nums2[p2])
+		if flag {
+			nums1[tail] = nums2[p2]
+			p2--
+		} else {
+			nums1[tail] = nums1[p1]
+			p1--
+		}
+		tail--
 	}
-	return ans
 }
 
 // 6202. 使用机器人打印字典序最小的字符串 https://leetcode.cn/problems/using-a-robot-to-print-the-lexicographically-smallest-string/
