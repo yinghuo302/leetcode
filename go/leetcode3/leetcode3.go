@@ -794,3 +794,222 @@ func constructDistancedSequence(n int) []int {
 	dfs(0)
 	return ret
 }
+
+// 907. 子数组的最小值之和 https://leetcode.cn/problems/sum-of-subarray-minimums
+// 给定一个整数数组 arr，找到 min(b) 的总和，其中 b 的范围为 arr 的每个（连续）子数组。由于答案可能很大，因此 返回答案模 10^9 + 7 。
+func sumSubarrayMins(arr []int) int {
+	n, mod, ans := len(arr), int64(1e9+7), int64(0)
+	stk := make([]int, 0, n)
+	dp := make([]int64, n)
+	stk = append(stk, -1)
+	for idx, val := range arr {
+		for stk[len(stk)-1] != -1 && val < arr[stk[len(stk)-1]] {
+			stk = stk[:len(stk)-1]
+		}
+		dp[idx] = 0
+		if stk[len(stk)-1] != -1 {
+			dp[idx] = dp[stk[len(stk)-1]]
+		}
+		dp[idx] = (dp[idx] + int64(idx-stk[len(stk)-1])*int64(val)) % mod
+		ans = (ans + dp[idx]) % mod
+		stk = append(stk, idx)
+	}
+	return int(ans)
+}
+
+// 2946. 循环移位后的矩阵相似检查 https://leetcode.cn/problems/matrix-similarity-after-cyclic-shifts
+// 给你一个下标从 0 开始且大小为 m x n 的整数矩阵 mat 和一个整数 k 。请你将矩阵中的 奇数 行循环 右 移 k 次，偶数 行循环 左 移 k 次。如果初始矩阵和最终矩阵完全相同，则返回 true ，否则返回 false 。
+func areSimilar(mat [][]int, k int) bool {
+	m, n := len(mat), len(mat[0])
+	if k%n == 0 {
+		return true
+	}
+	for i := 0; i < m; i++ {
+		for j := 0; j < n; j++ {
+			if mat[i][(k+j)%n] != mat[i][j] {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// 2948. 交换得到字典序最小的数组 https://leetcode.cn/problems/make-lexicographically-smallest-array-by-swapping-elements
+// 给你一个下标从 0 开始的 正整数 数组 nums 和一个 正整数 limit 。在一次操作中，你可以选择任意两个下标 i 和 j，如果 满足 |nums[i] - nums[j]| <= limit ，则交换 nums[i] 和 nums[j] 。返回执行任意次操作后能得到的 字典序最小的数组 。如果在数组 a 和数组 b 第一个不同的位置上，数组 a 中的对应字符比数组 b 中的对应字符的字典序更小，则认为数组 a 就比数组 b 字典序更小。例如，数组 [2,10,3] 比数组 [10,2,3] 字典序更小，下标 0 处是两个数组第一个不同的位置，且 2 < 10 。
+func lexicographicallySmallestArray(nums []int, limit int) []int {
+	n := len(nums)
+	indices := make([]int, n)
+	ans := make([]int, n)
+	for i := 0; i < n; i++ {
+		indices[i] = i
+	}
+	sort.Slice(indices, func(i, j int) bool {
+		return nums[indices[i]] < nums[indices[j]]
+	})
+	for i := 0; i < n; {
+		last := i
+		for i++; i < n; i++ {
+			if nums[indices[i]]-nums[indices[i-1]] > limit {
+				break
+			}
+		}
+		subIdx := make([]int, 0)
+		copy(subIdx, indices[last:i])
+		sort.Ints(subIdx)
+		for j, idx := range subIdx {
+			ans[idx] = nums[indices[last+j]]
+		}
+	}
+	return ans
+}
+
+// 1670. 设计前中后队列
+// 请你设计一个队列，支持在前，中，后三个位置的 push 和 pop 操作。请你完成 FrontMiddleBack 类：FrontMiddleBack() 初始化队列。void pushFront(int val) 将 val 添加到队列的 最前面 。void pushMiddle(int val) 将 val 添加到队列的 正中间 。void pushBack(int val) 将 val 添加到队里的 最后面 。int popFront() 将 最前面 的元素从队列中删除并返回值，如果删除之前队列为空，那么返回 -1 。int popMiddle() 将 正中间 的元素从队列中删除并返回值，如果删除之前队列为空，那么返回 -1 。int popBack() 将 最后面 的元素从队列中删除并返回值，如果删除之前队列为空，那么返回 -1 。请注意当有 两个 中间位置的时候，选择靠前面的位置进行操作。比方说：将 6 添加到 [1, 2, 3, 4, 5] 的中间位置，结果数组为 [1, 2, 6, 3, 4, 5] 。从 [1, 2, 3, 4, 5, 6] 的中间位置弹出元素，返回 3 ，数组变为 [1, 2, 4, 5, 6] 。
+type FrontMiddleBackQueue struct {
+	head *DoubleLinkList
+	tail *DoubleLinkList
+	mid  *DoubleLinkList
+	size int
+}
+
+type DoubleLinkList struct {
+	Val  int
+	Next *DoubleLinkList
+	Prev *DoubleLinkList
+}
+
+func Constructor() FrontMiddleBackQueue {
+	return FrontMiddleBackQueue{
+		head: nil, tail: nil, mid: nil, size: 0,
+	}
+}
+
+func (this *FrontMiddleBackQueue) PushFront(val int) {
+	node := &DoubleLinkList{Val: val, Next: this.head, Prev: nil}
+	if this.head != nil {
+		this.head.Prev = node
+	} else {
+		this.tail = node
+		this.mid = node
+	}
+	this.head = node
+	this.size++
+	if this.size > 1 && (this.size&1) == 0 {
+		this.mid = this.mid.Next
+	}
+}
+
+func (this *FrontMiddleBackQueue) PushMiddle(val int) {
+	var node *DoubleLinkList
+	if this.size == 0 {
+		node = &DoubleLinkList{Val: val, Next: nil, Prev: nil}
+		this.head = node
+		this.tail = node
+		this.mid = node
+		this.size = 1
+		return
+	}
+	if (this.size & 1) == 0 {
+		node = &DoubleLinkList{Val: val, Next: this.mid.Next, Prev: this.mid}
+	} else {
+		node = &DoubleLinkList{Val: val, Next: this.mid, Prev: this.mid.Prev}
+	}
+	this.mid = node
+	this.size++
+	node.Next.Prev = node
+	if this.size == 1 {
+		this.head = node
+		this.tail = node.Next
+	} else {
+		node.Prev.Next = node
+	}
+}
+
+func (this *FrontMiddleBackQueue) PushBack(val int) {
+	node := &DoubleLinkList{Val: val, Next: nil, Prev: this.tail}
+	this.tail = node
+	if this.head == nil {
+		this.head = node
+		this.mid = node
+	}
+	this.size++
+	if this.size > 1 && (this.size&1) == 1 {
+		this.mid = this.mid.Next
+	}
+}
+
+func (this *FrontMiddleBackQueue) PopFront() int {
+	if this.head == nil {
+		return -1
+	}
+	val := this.head.Val
+	this.size--
+	this.head = this.head.Next
+	if this.head != nil {
+		this.head.Prev = nil
+	} else {
+		this.tail = nil
+		this.mid = nil
+	}
+	return val
+}
+
+func (this *FrontMiddleBackQueue) PopMiddle() int {
+	if this.mid == nil {
+		return -1
+	}
+	val := this.mid.Val
+	new_mid := this.mid.Prev
+	if (this.size & 1) == 0 {
+		this.mid = this.mid.Next
+	}
+	if this.size <= 2 {
+		this.head = new_mid
+		this.tail = new_mid
+
+	} else {
+		this.mid.Prev.Next = this.mid.Next
+		this.mid.Next.Prev = this.mid.Prev
+	}
+	this.mid = new_mid
+	this.size--
+	return val
+}
+
+func (this *FrontMiddleBackQueue) PopBack() int {
+	if this.head == nil {
+		return -1
+	}
+	val := this.tail.Val
+	this.size--
+	this.tail = this.tail.Prev
+	if this.tail != nil {
+		this.tail.Next = nil
+	} else {
+		this.head = nil
+		this.mid = nil
+	}
+	return val
+}
+
+// 2943. 最大化网格图中正方形空洞的面积 https://leetcode.cn/problems/maximize-area-of-square-hole-in-grid
+// 给你一个网格图，由 n + 2 条 横线段 和 m + 2 条 竖线段 组成，一开始所有区域均为 1 x 1 的单元格。所有线段的编号从 1 开始。给你两个整数 n 和 m 。同时给你两个整数数组 hBars 和 vBars 。hBars 包含区间 [2, n + 1] 内 互不相同 的横线段编号。vBars 包含 [2, m + 1] 内 互不相同的 竖线段编号。如果满足以下条件之一，你可以 移除 两个数组中的部分线段：如果移除的是横线段，它必须是 hBars 中的值。如果移除的是竖线段，它必须是 vBars 中的值。请你返回移除一些线段后（可能不移除任何线段），剩余网格图中 最大正方形 空洞的面积，正方形空洞的意思是正方形 内部 不含有任何线段。
+func maximizeSquareHoleArea(n int, m int, hBars []int, vBars []int) int {
+	calcalute := func(right int, arr []int) int {
+		sort.Ints(arr)
+		ans := 1
+		bar := arr[0] - 1
+		prev := arr[0] - 1
+		for _, val := range arr {
+			if val != prev+1 {
+				ans = max(prev+1-bar, ans)
+				bar = val - 1
+			}
+			prev = val
+		}
+		ans = max(prev+1-bar, ans)
+		return ans
+	}
+	a := min(calcalute(n, hBars), calcalute(m, vBars))
+	return a * a
+}
