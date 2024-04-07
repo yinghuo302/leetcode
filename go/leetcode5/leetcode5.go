@@ -420,3 +420,62 @@ func (this *TreeAncestor) GetKthAncestor(node int, k int) int {
 	}
 	return node
 }
+
+// 1600. 王位继承顺序 https://leetcode.cn/problems/throne-inheritance
+// 一个王国里住着国王、他的孩子们、他的孙子们等等。每一个时间点，这个家庭里有人出生也有人死亡。这个王国有一个明确规定的王位继承顺序，第一继承人总是国王自己。我们定义递归函数 Successor(x, curOrder) ，给定一个人 x 和当前的继承顺序，该函数返回 x 的下一继承人。Successor(x, curOrder):如果 x 没有孩子或者所有 x 的孩子都在 curOrder 中：如果 x 是国王，那么返回 null。否则，返回 Successor(x 的父亲, curOrder)。否则，返回 x 不在 curOrder 中最年长的孩子。比方说，假设王国由国王，他的孩子 Alice 和 Bob （Alice 比 Bob 年长）和 Alice 的孩子 Jack 组成。一开始， curOrder 为 ["king"].调用 Successor(king, curOrder) ，返回 Alice ，所以我们将 Alice 放入 curOrder 中，得到 ["king", "Alice"] 。调用 Successor(Alice, curOrder) ，返回 Jack ，所以我们将 Jack 放入 curOrder 中，得到 ["king", "Alice", "Jack"] 。调用 Successor(Jack, curOrder) ，返回 Bob ，所以我们将 Bob 放入 curOrder 中，得到 ["king", "Alice", "Jack", "Bob"] 。调用 Successor(Bob, curOrder) ，返回 null 。最终得到继承顺序为 ["king", "Alice", "Jack", "Bob"] 。通过以上的函数，我们总是能得到一个唯一的继承顺序。请你实现 ThroneInheritance 类：ThroneInheritance(string kingName) 初始化一个 ThroneInheritance 类的对象。国王的名字作为构造函数的参数传入。void birth(string parentName, string childName) 表示 parentName 新拥有了一个名为 childName 的孩子。void death(string name) 表示名为 name 的人死亡。一个人的死亡不会影响 Successor 函数，也不会影响当前的继承顺序。你可以只将这个人标记为死亡状态。string[] getInheritanceOrder() 返回 除去 死亡人员的当前继承顺序列表。
+
+type ThroneInheritance struct {
+	childs map[string][]string
+	dead   map[string]struct{}
+	king   string
+}
+
+func Constructor(kingName string) ThroneInheritance {
+	return ThroneInheritance{childs: make(map[string][]string), dead: make(map[string]struct{}), king: kingName}
+}
+
+func (this *ThroneInheritance) Birth(parentName string, childName string) {
+	this.childs[parentName] = append(this.childs[parentName], childName)
+}
+
+func (this *ThroneInheritance) Death(name string) {
+	this.dead[name] = struct{}{}
+}
+
+func (this *ThroneInheritance) GetInheritanceOrder() []string {
+	ans := make([]string, 0)
+	var dfs func(string)
+	dfs = func(s string) {
+		if _, ok := this.dead[s]; !ok {
+			ans = append(ans, s)
+		}
+		for _, child := range this.childs[s] {
+			dfs(child)
+		}
+	}
+	dfs(this.king)
+	return ans
+}
+
+// 2009. 使数组连续的最少操作数 https://leetcode.cn/problems/minimum-number-of-operations-to-make-array-continuous
+// 给你一个整数数组 nums 。每一次操作中，你可以将 nums 中 任意 一个元素替换成 任意 整数。如果 nums 满足以下条件，那么它是 连续的 ：nums 中所有元素都是 互不相同 的。nums 中 最大 元素与 最小 元素的差等于 nums.length - 1 。比方说，nums = [4, 2, 5, 3] 是 连续的 ，但是 nums = [1, 2, 3, 5, 6] 不是连续的 。请你返回使 nums 连续 的 最少 操作次数。
+func minOperations(nums []int) int {
+	sort.Ints(nums)
+	left, right, size, ans := 0, 0, len(nums), len(nums)
+	cnt := make(map[int]int)
+	for ; left < size; left++ {
+		for right < size && nums[right] < nums[left]+size {
+			cnt[nums[right]]++
+			right++
+		}
+		ans = min(ans, size-len(cnt))
+		if right == size {
+			break
+		}
+		cnt[nums[left]]--
+		if cnt[nums[left]] == 0 {
+			delete(cnt, nums[left])
+		}
+	}
+	return ans
+}
