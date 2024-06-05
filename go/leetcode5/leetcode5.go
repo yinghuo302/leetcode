@@ -3,6 +3,7 @@ package leetcode5
 import (
 	"math"
 	"sort"
+	"strconv"
 )
 
 func max(a, b int) int {
@@ -430,7 +431,7 @@ type ThroneInheritance struct {
 	king   string
 }
 
-func Constructor(kingName string) ThroneInheritance {
+func ThroneInheritanceConstructor(kingName string) ThroneInheritance {
 	return ThroneInheritance{childs: make(map[string][]string), dead: make(map[string]struct{}), king: kingName}
 }
 
@@ -478,4 +479,181 @@ func minOperations(nums []int) int {
 		}
 	}
 	return ans
+}
+
+// 2529. 正整数和负整数的最大计数 https://leetcode.cn/problems/maximum-count-of-positive-integer-and-negative-integer/
+// 给你一个按 非递减顺序 排列的数组 nums ，返回正整数数目和负整数数目中的最大值。换句话讲，如果 nums 中正整数的数目是 pos ，而负整数的数目是 neg ，返回 pos 和 neg二者中的最大值。注意：0 既不是正整数也不是负整数。
+func maximumCount(nums []int) int {
+	first_zero := sort.Search(len(nums), func(i int) bool {
+		return nums[i] >= 0
+	})
+	first_pos := sort.Search(len(nums), func(i int) bool {
+		return nums[i] > 0
+	})
+	return max(first_zero, len(nums)-first_pos)
+}
+
+// 2781. 最长合法子字符串的长度 https://leetcode.cn/problems/length-of-the-longest-valid-substring/
+// 给你一个字符串 word 和一个字符串数组 forbidden 。如果一个字符串不包含 forbidden 中的任何字符串，我们称这个字符串是 合法 的。请你返回字符串 word 的一个 最长合法子字符串 的长度。子字符串 指的是一个字符串中一段连续的字符，它可以为空。
+func longestValidSubstring(word string, forbidden []string) int {
+	mp := make(map[string]struct{})
+	for _, forb := range forbidden {
+		mp[forb] = struct{}{}
+	}
+	size, prev, ans := len(word), 0, 0
+	for right := 0; right < size; right++ {
+		for left, mn := right, max(right-9, prev); left >= mn; left-- {
+			if _, ok := mp[word[left:right+1]]; ok {
+				prev = left + 1
+				break
+			}
+		}
+		ans = max(ans, right-prev+1)
+	}
+	return ans
+}
+
+// 241. 为运算表达式设计优先级 https://leetcode.cn/problems/different-ways-to-add-parentheses/
+// 给你一个由数字和运算符组成的字符串 expression ，按不同优先级组合数字和运算符，计算并返回所有可能组合的结果。你可以 按任意顺序 返回答案。生成的测试用例满足其对应输出值符合 32 位整数范围，不同结果的数量不超过 104 。
+func diffWaysToCompute(expression string) []int {
+	mp := make(map[int][]int)
+	var dfs func(int) []int
+	dfs = func(i int) []int {
+		if res, ok := mp[i]; ok {
+			return res
+		}
+		l, r := i>>8, i&0xff
+		if val, err := strconv.Atoi(expression[l:r]); err == nil {
+			mp[i] = []int{val}
+			return mp[i]
+		}
+		res := make([]int, 0)
+		for mid := l; mid < r; mid++ {
+			if expression[mid] == '+' || expression[mid] == '-' || expression[mid] == '*' {
+				left, right := dfs(l*256+mid), dfs((mid+1)*256+r)
+				for _, l := range left {
+					for _, r := range right {
+						switch expression[mid] {
+						case '+':
+							res = append(res, l+r)
+						case '-':
+							res = append(res, l-r)
+						case '*':
+							res = append(res, l*r)
+						}
+					}
+				}
+			}
+		}
+		mp[i] = res
+		return res
+	}
+	return dfs(len(expression))
+}
+
+// 2982. 找出出现至少三次的最长特殊子字符串 II https://leetcode.cn/problems/find-longest-special-substring-that-occurs-thrice-ii/
+// 给你一个仅由小写英文字母组成的字符串 s 。如果一个字符串仅由单一字符组成，那么它被称为 特殊 字符串。例如，字符串 "abc" 不是特殊字符串，而字符串 "ddd"、"zz" 和 "f" 是特殊字符串。返回在 s 中出现 至少三次 的 最长特殊子字符串 的长度，如果不存在出现至少三次的特殊子字符串，则返回 -1 。子字符串 是字符串中的一个连续 非空 字符序列。
+func maximumLength(s string) int {
+	prev, cnt, maxCnt := '-', 0, 0
+	arr := make([][]int, 26)
+	for _, ch := range s {
+		if prev == ch {
+			cnt++
+		} else {
+			if prev != '-' {
+				maxCnt = max(cnt, maxCnt)
+				arr[prev-'a'] = append(arr[prev-'a'], cnt)
+			}
+			cnt = 1
+			prev = ch
+		}
+	}
+	maxCnt = max(cnt, maxCnt)
+	arr[prev-'a'] = append(arr[prev-'a'], cnt)
+	ret := sort.Search(maxCnt+1, func(target int) bool {
+		if target == 0 {
+			return false
+		}
+		for i := 0; i < 26; i++ {
+			sum := 0
+			for _, cnt := range arr[i] {
+				if cnt >= target {
+					sum += cnt - target + 1
+				}
+			}
+			if sum >= 3 {
+				return false
+			}
+		}
+		return true
+	}) - 1
+	if ret == 0 {
+		return -1
+	}
+	return ret
+}
+
+type BIT struct {
+	arr []int
+}
+
+func lowbit(x int) int {
+	return x & (-x)
+}
+
+func BITConstructor(n int) BIT {
+	return BIT{
+		arr: make([]int, n+1),
+	}
+}
+
+func (this *BIT) Update(pos, inc int) {
+	for pos < len(this.arr) {
+		this.arr[pos] += inc
+		pos += lowbit(pos)
+	}
+}
+
+func (this *BIT) GetSum(pos int) int {
+	sum := 0
+	for pos > 0 {
+		sum += this.arr[pos]
+		pos -= lowbit(pos)
+	}
+	return sum
+}
+
+// 3072. 将元素分配到两个数组中 II https://leetcode.cn/problems/distribute-elements-into-two-arrays-ii
+// 给你一个下标从 1 开始、长度为 n 的整数数组 nums 。现定义函数 greaterCount ，使得 greaterCount(arr, val) 返回数组 arr 中 严格大于 val 的元素数量。你需要使用 n 次操作，将 nums 的所有元素分配到两个数组 arr1 和 arr2 中。在第一次操作中，将 nums[1] 追加到 arr1 。在第二次操作中，将 nums[2] 追加到 arr2 。之后，在第 i 次操作中：如果 greaterCount(arr1, nums[i]) > greaterCount(arr2, nums[i]) ，将 nums[i] 追加到 arr1 。如果 greaterCount(arr1, nums[i]) < greaterCount(arr2, nums[i]) ，将 nums[i] 追加到 arr2 。如果 greaterCount(arr1, nums[i]) == greaterCount(arr2, nums[i]) ，将 nums[i] 追加到元素数量较少的数组中。如果仍然相等，那么将 nums[i] 追加到 arr1 。连接数组 arr1 和 arr2 形成数组 result 。例如，如果 arr1 == [1,2,3] 且 arr2 == [4,5,6] ，那么 result = [1,2,3,4,5,6] 。返回整数数组 result 。
+func resultArray(nums []int) []int {
+	n := len(nums)
+	numsCopy := append([]int{}, nums...)
+	sort.Ints(numsCopy)
+	mp := make(map[int]int)
+	prev, cnt := -1, n
+	for _, num := range numsCopy {
+		if prev != num {
+			prev = num
+			mp[num] = cnt
+			cnt--
+		}
+	}
+	lBIT, rBIT := BITConstructor(n+4), BITConstructor(n+4)
+	larr, rarr := make([]int, 0), make([]int, 0)
+	for idx, num := range nums {
+		l, r := lBIT.GetSum(mp[num]-1), rBIT.GetSum(mp[num]-1)
+		left := true
+		if idx == 1 || l < r || (l == r && len(larr) > len(rarr)) {
+			left = false
+		}
+		if left {
+			lBIT.Update(mp[num], 1)
+			larr = append(larr, num)
+		} else {
+			rBIT.Update(mp[num], 1)
+			rarr = append(rarr, num)
+		}
+
+	}
+	return append(larr, rarr...)
 }
